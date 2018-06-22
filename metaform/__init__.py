@@ -16,7 +16,7 @@ def convert(key, value, schema, slugify=False, storage=None):
     Given:
     >>> schema = {
         '*': "https://www.wikidata.org/wiki/Q82799|lambda _: _.replace(',','')"
-        }
+    }
     >>> convert(key='something', value='1,234', schema)
     ('https://www.wikidata.org/wiki/Q82799', '1234')
     """
@@ -68,40 +68,29 @@ def convert(key, value, schema, slugify=False, storage=None):
 def normalize(data, schema, slugify=True):
     '''
     Combine data with schema and types in schema by zipping tree.
-    Given:
-    >>> data = \
-    [{'address': {'number': 14, 'street': 'Leonardo str.'},
-     'children': [{'age': 1, 'name': 'Mike'}, {'age': 15, 'name': 'Tom'}],
-     'name': 'Max'},
-    {'address': {'number': 1, 'street': 'Nexus str.'},
-     'children': [{'age': 1, 'name': 'Deli'}, {'age': 7, 'name': 'Miki'}],
-     'name': 'Dim'}]
-    >>> schema = \
-    [{'_version': 'domain.com/parents-0.1',
-    '*': 'https://www.wikidata.org/wiki/Q7565',
-    'address': {'*': 'https://www.wikidata.org/wiki/Q319608',
-     'number': {'*': 'https://www.wikidata.org/wiki/Q1413235|lambda _: int(_)'},
-     'street': {'*': 'https://www.wikidata.org/wiki/Q24574749'}},
-    'children': [{'*': 'https://www.wikidata.org/wiki/Q7569',
-      'age': {'*': 'https://www.wikidata.org/wiki/Q185836|lambda _: float(_)'},
-      'name': {'*': 'https://www.wikidata.org/wiki/Q82799'}}],
-    'name': {'*': 'https://www.wikidata.org/wiki/Q82799'}}]
-    >>> normalize(data, schema)
-    [{'https-www-wikidata-org-wiki-q319608': {'https-www-wikidata-org-wiki-q1413235': 14,
-       'https-www-wikidata-org-wiki-q24574749': 'Leonardo str.'},
-      'https-www-wikidata-org-wiki-q7569': [{'https-www-wikidata-org-wiki-q185836': 1.0,
-        'https-www-wikidata-org-wiki-q82799': 'Mike'},
-       {'https-www-wikidata-org-wiki-q185836': 15.0,
-        'https-www-wikidata-org-wiki-q82799': 'Tom'}],
-      'https-www-wikidata-org-wiki-q82799': 'Max'},
-     {'https-www-wikidata-org-wiki-q319608': {'https-www-wikidata-org-wiki-q1413235': 1,
-       'https-www-wikidata-org-wiki-q24574749': 'Nexus str.'},
-      'https-www-wikidata-org-wiki-q7569': [{'https-www-wikidata-org-wiki-q185836': 1.0,
-        'https-www-wikidata-org-wiki-q82799': 'Deli'},
-       {'https-www-wikidata-org-wiki-q185836': 7.0,
-        'https-www-wikidata-org-wiki-q82799': 'Miki'}],
-      'https-www-wikidata-org-wiki-q82799': 'Dim'}]
 
+    Example:
+    >>> data = \
+    [{'name': 'max',
+      'age': {'median': 21, 'average': 30}},
+     {'name': 'min',
+      'age': {'median': 12, 'average': 15}}]
+    >>> schema = \
+    [{'*': 'https://www.wikidata.org/wiki/Q7565',
+    'name': {'*': 'https://www.wikidata.org/wiki/Q82799|lambda _: _.title()'},
+    'age': {
+        '*': 'https://www.wikidata.org/wiki/Q185836',
+        'median': {'*': 'https://www.wikidata.org/wiki/Q185836#median'},
+        'average': {'*': 'https://www.wikidata.org/wiki/Q185836#average'}}}]
+    >>> normalize(data, schema)
+    [{'https-www-wikidata-org-wiki-q82799': 'Max',
+      'https-www-wikidata-org-wiki-q185836':
+         {'https-www-wikidata-org-wiki-q185836#median': 21,
+          'https-www-wikidata-org-wiki-q185836#average': 30}},
+     {'https-www-wikidata-org-wiki-q82799': 'Min',
+      'https-www-wikidata-org-wiki-q185836':
+         {'https-www-wikidata-org-wiki-q185836#median': 12,
+          'https-www-wikidata-org-wiki-q185836#average': 15}}]
     '''
 
     def visit(path, key, value):

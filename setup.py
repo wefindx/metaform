@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='metaform',
-    version='0.0.2',
+    version='0.0.3',
     description='A utility for defining metadata for data types and formats.',
     url='https://github.com/mindey/metaform',
     author='Mindey',
