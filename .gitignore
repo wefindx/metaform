@@ -1,3 +1,4 @@
 metaform.egg-info/
+*__pycache__*
 .env
 dist
