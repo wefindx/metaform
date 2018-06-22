@@ -12,6 +12,8 @@ def convert(key, value, schema, slugify=False, storage=None):
     Given a dictionary key, value, and schema specification,
     returns the key with normalize value.
 
+    Optionally, saves the {slugified -> original} map in the storage.
+
     E.g.:
     Given:
     >>> schema = {
@@ -65,7 +67,7 @@ def convert(key, value, schema, slugify=False, storage=None):
 
     return key, value
 
-def normalize(data, schema, slugify=True):
+def normalize(data, schema, slugify=True, storage=None):
     '''
     Combine data with schema and types in schema by zipping tree.
 
@@ -99,7 +101,7 @@ def normalize(data, schema, slugify=True):
             meta = dictget(schema, metapath(path))[key if not isinstance(key, int) else 0]
             if isinstance(meta, list):
                 meta = meta[0]
-            return convert(key, value, meta, slugify=slugify)
+            return convert(key, value, meta, slugify=slugify, storage=storage)
         except:
             return key, value
 
