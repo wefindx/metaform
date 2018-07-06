@@ -1,5 +1,16 @@
 from metaform import convert, normalize
 
+def test_simple_conversion():
+
+    key = 'something'
+    value = '1,234'
+    schema = {
+        '*': "IN:mindey/thing|lambda _: _.replace(',','')"
+    }
+
+    assert convert(key, value, schema) == \
+        ('IN:mindey/thing', '1234')
+
 def test_conversion():
 
     key = 'something'

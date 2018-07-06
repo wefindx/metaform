@@ -4,8 +4,15 @@ from functools import reduce
 import operator
 from . import converters
 
+import metawiki
 
-def slug(url):
+
+def slug(url, skip_valid=True):
+
+    if skip_valid:
+        if metawiki.isname(url):
+            return url
+
     if '#' in url:
         url, anchor = url.rsplit('#', 1)
         return '{}#{}'.format(slugify(url), slugify(anchor))
