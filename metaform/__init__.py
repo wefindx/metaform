@@ -6,6 +6,10 @@ from metaform.utils import (
     slug
 )
 
+# convenience alias #
+from metaform.utils import metaplate #noqa
+
+
 
 def convert(key, value, schema, slugify=False, storage=None):
     """

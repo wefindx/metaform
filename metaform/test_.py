@@ -1,6 +1,11 @@
-from metaform import convert, normalize
+from metaform import (
+    convert,
+    normalize,
+    metaplate
+)
 
-from metaform.utils import template_of
+from copy import deepcopy
+
 
 def test_simple_conversion():
 
@@ -64,7 +69,7 @@ def test_normalization():
     assert normalize(data, schema) == result
 
 
-def test_make_template():
+def test_make_and_apply_template():
 
     data = {
         'a': [
@@ -75,7 +80,7 @@ def test_make_template():
         'b': 'something'
     }
 
-    result = template_of(data)
+    template = metaplate(data)
 
     answer = {
         'a': [
@@ -87,4 +92,51 @@ def test_make_template():
         'b': {'*': ''}
     }
 
+    assert template == answer
+
+    # apply:
+
+    template['a'][0]['b']['*'] = 'hello'
+
+    result = normalize(data, template)
+
+    answer = deepcopy(data)
+
+    del answer['a'][0]['b']
+    answer['a'][0]['hello'] = 'c'
+
     assert result == answer
+
+
+def test_make_and_apply_complex_template():
+    data = {'fields': {'blockchain': 0,
+      'body': '.:en\nThe estimated cost of the laser array is based on extrapolation from the past two decades...',
+      'categories': [],
+      'comment_count': 37,
+      'created_date': '2012-10-14T11:43:11',
+      'data': None,
+      'editors': [],
+      'is_draft': False,
+      'languages': '["en"]',
+      'owner': 120,
+      'parents': [32],
+      'source': '',
+      'title': '.:en:Cost',
+      'type': 5,
+      'unsubscribed': [],
+      'updated_date': '2017-03-21T11:31:53.338'},
+     'model': 'core.topic',
+     'pk': 1}
+
+    template = metaplate(data)
+
+    template['fields']['blockchain']['*'] = 'HELLO'
+
+    ndata = normalize(data, template)
+
+    answer = deepcopy(data)
+    del answer['fields']['blockchain']
+    answer['fields']['hello'] = 0
+
+    assert ndata == answer
+

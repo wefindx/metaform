@@ -45,8 +45,10 @@ def metapath(path):
             metapath.append(item)
     return metapath
 
-def template_of(data):
+def metaplate(data):
     '''
+    Creates a meta-template for a dictionary-like data.
+
     Given:
     >>> data = {'a': [{'b': 'c'}, {'e': 'f'}, {'g': 'h'}], 'b': 'something'}
 
@@ -66,7 +68,8 @@ def template_of(data):
     def sum_dicts(list_of_dicts):
         result = {}
         for item in list_of_dicts:
-            result.update(item)
+            if isinstance(item, dict):
+                result.update(item)
         return [result]
 
     def schematize(obj):
