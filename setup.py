@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='metaform',
-    version='0.0.9',
+    version='0.1.0',
     description='A utility for defining metadata for data types and formats.',
     url='https://gitlab.com/wefindx/metaform',
     author='Mindey',

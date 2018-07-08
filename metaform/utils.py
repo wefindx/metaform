@@ -45,7 +45,7 @@ def metapath(path):
             metapath.append(item)
     return metapath
 
-def metaplate(data):
+def metaplate(data, with_self=True):
     '''
     Creates a meta-template for a dictionary-like data.
 
@@ -53,8 +53,9 @@ def metaplate(data):
     >>> data = {'a': [{'b': 'c'}, {'e': 'f'}, {'g': 'h'}], 'b': 'something'}
 
     Returns template:
-    >>> template_of(data) == result
+    >>> metaplate(data) == result
     result = {
+        '*': '',
         'a': [
             {'*': '',
              'b': {'*': ''},
@@ -93,5 +94,13 @@ def metaplate(data):
 
 
     remapped = remap(data, visit=visit)
+
+    if with_self:
+        if isinstance(remapped, dict):
+            remapped.update({'*': ''})
+        elif isinstance(remapped, list):
+            if remapped:
+                if remapped[0]:
+                    remapped[0].update({'*': ''})
 
     return remapped

@@ -83,6 +83,7 @@ def test_make_and_apply_template():
     template = metaplate(data)
 
     answer = {
+        '*': '',
         'a': [
             {'*': '',
              'b': {'*': ''},
