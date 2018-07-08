@@ -1,5 +1,7 @@
 from metaform import convert, normalize
 
+from metaform.utils import template_of
+
 def test_simple_conversion():
 
     key = 'something'
@@ -60,3 +62,29 @@ def test_normalization():
       'https-www-wikidata-org-wiki-q82799': 'Dim'}]
 
     assert normalize(data, schema) == result
+
+
+def test_make_template():
+
+    data = {
+        'a': [
+            {'b': 'c'},
+            {'e': 'f'},
+            {'g': 'h'}
+        ],
+        'b': 'something'
+    }
+
+    result = template_of(data)
+
+    answer = {
+        'a': [
+            {'*': '',
+             'b': {'*': ''},
+             'e': {'*': ''},
+             'g': {'*': ''}}
+        ],
+        'b': {'*': ''}
+    }
+
+    assert result == answer
