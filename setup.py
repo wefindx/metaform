@@ -1,8 +1,11 @@
+# Copyright (c) 2018 WeFindX Foundation, CLG.
+# All Rights Reserved.
+
 from setuptools import find_packages, setup
 
 setup(
     name='metaform',
-    version='0.1.0',
+    version='0.1.1',
     description='A utility for defining metadata for data types and formats.',
     url='https://gitlab.com/wefindx/metaform',
     author='Mindey',
