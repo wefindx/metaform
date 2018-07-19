@@ -73,25 +73,25 @@ def metaplate(data, with_self=True):
                 result.update(item)
         return [result]
 
-    def schematize(obj):
-        if isinstance(obj, dict):
-            return {k: schematize(v) for k, v in obj.items()}
-        elif isinstance(obj, list):
-            return sum_dicts([schematize(elem) for elem in obj])
-        else:
-            return obj
-
     def visit(path, key, value):
         if isinstance(value, list):
-            value[0].update({'*': ''})
-            return key, value
+            combined = sum_dicts(value)
+            combined[0].update({'*': ''})
+            return key, combined
         if not isinstance(value, list) and not isinstance(value, dict):
             return key, {'*': ''}
         else:
             return key, value
 
-    data = schematize(data)
+    # def schematize(obj):
+    #     if isinstance(obj, dict):
+    #         return {k: schematize(v) for k, v in obj.items()}
+    #     elif isinstance(obj, list):
+    #         return sum_dicts([schematize(elem) for elem in obj])
+    #     else:
+    #         return obj
 
+    # data = schematize(data)
 
     remapped = remap(data, visit=visit)
 
