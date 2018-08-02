@@ -13,6 +13,10 @@ def slug(url, skip_valid=True):
         if metawiki.isname(url):
             return url
 
+    # exception
+    if url == '-':
+        return url
+
     if '#' in url:
         url, anchor = url.rsplit('#', 1)
         return '{}#{}'.format(slugify(url), slugify(anchor))
