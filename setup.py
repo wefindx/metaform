@@ -9,7 +9,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='metaform',
-    version='0.2.1',
+    version='0.2.2',
     description='A utility for defining metadata for data types and formats.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -18,7 +18,7 @@ setup(
     author_email='mindey@qq.com',
     license='ASK FOR PERMISSIONS',
     packages = find_packages(exclude=['docs', 'tests*']),
-    install_requires=["metawiki", "boltons", "python-slugify"],
+    install_requires=["metawiki", "boltons", "python-slugify", "typology", "tinydb"],
     extras_require = {
         'test': ['coverage', 'pytest', 'pytest-cov'],
     },

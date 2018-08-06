@@ -8,7 +8,7 @@ from metaform.utils import (
 
 # convenience alias #
 from metaform.utils import metaplate #noqa
-
+from metaform.utils import get_concept
 
 
 def convert(key, value, schema, slugify=False, storage=None):
@@ -112,3 +112,21 @@ def normalize(data, schema, slugify=True, storage=None):
     remapped = remap(data, visit=visit)
 
     return remapped
+
+def translate(ndata, lang=None, refresh=False):
+
+    if lang:
+        def visit(path, key, value):
+            concept = get_concept(key, refresh)
+
+            if concept:
+                if concept.get('aliases'):
+                    if concept['aliases'].get(lang):
+                        return concept['aliases'][lang][0], value
+
+            return key, value
+
+        return remap(ndata, visit=visit)
+
+    else:
+        return ndata

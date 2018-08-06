@@ -1,10 +1,22 @@
+import os
+import pathlib
 from boltons.iterutils import remap
 from slugify import slugify
 from functools import reduce
 import operator
+from tinydb import TinyDB, Query
+
 from . import converters
 
 import metawiki
+import typology
+
+conf_path = os.path.join( str(pathlib.Path.home()), '.ooio')
+
+if not os.path.exists(conf_path):
+    os.makedirs(conf_path)
+
+db = TinyDB(os.path.join(conf_path, 'db.json'))
 
 
 def slug(url, skip_valid=True):
@@ -98,3 +110,35 @@ def metaplate(data, with_self=True):
                     remapped[0].update({'*': ''})
 
     return remapped
+
+
+def get_concept(value, refresh=False):
+
+    if any(
+        [str(value).startswith(it) for it in
+         list(metawiki.NAMESPACES.keys()) + ['https://github.com']]
+    ):
+
+        Concept = Query()
+
+        url = metawiki.name_to_url(str(value))
+        slg = slug(url)
+
+        result = db.search(Concept.slug == slg)
+
+        if refresh or not result:
+
+            try:
+                concept = typology.Concept(url).concept
+                result = {'slug': slg, 'concept': concept}
+                db.insert(result)
+
+                return concept
+
+            except:
+                print("-> Undefined concept: {}".format(url))
+
+        elif result:
+            return result[0]['concept']
+    else:
+        return
