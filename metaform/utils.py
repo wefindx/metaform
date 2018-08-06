@@ -69,7 +69,7 @@ def metaplate(data, with_self=True):
         'b': {'*': ''}
     }
     '''
-    # helpers:
+
     def sum_dicts(list_of_dicts):
         result = {}
         for item in list_of_dicts:
@@ -86,16 +86,6 @@ def metaplate(data, with_self=True):
             return key, {'*': ''}
         else:
             return key, value
-
-    # def schematize(obj):
-    #     if isinstance(obj, dict):
-    #         return {k: schematize(v) for k, v in obj.items()}
-    #     elif isinstance(obj, list):
-    #         return sum_dicts([schematize(elem) for elem in obj])
-    #     else:
-    #         return obj
-
-    # data = schematize(data)
 
     remapped = remap(data, visit=visit)
 
