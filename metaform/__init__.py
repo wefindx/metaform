@@ -8,6 +8,7 @@ from metaform.utils import (
 
 # convenience alias #
 from metaform.utils import metaplate #noqa
+from metaform.utils import metaplate as template #noqa
 from metaform.utils import get_concept
 
 
