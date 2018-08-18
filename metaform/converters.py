@@ -2,23 +2,74 @@ from boltons.timeutils import isoparse
 from urllib.parse import urlparse
 from decimal import Decimal
 
+# TODO: refactor exceptions
+
 def object(x):
-    return dict(x)
+    # return dict(x)
+    try:
+        return dict(x)
+    except Exception as e:
+        if silent:
+            return x
+        else:
+            raise e
 
-def integer(x):
-    return int(x)
+def integer(x, silent=True):
+    #return int(x)
+    try:
+        return int(x)
+    except Exception as e:
+        if silent:
+            return x
+        else:
+            raise e
 
-def rational(x):
-    return float(x)
+def rational(x, silent=True):
+    #return float(x)
+    try:
+        return float(x)
+    except Exception as e:
+        if silent:
+            return x
+        else:
+            raise e
 
-def decimal(x):
-    return decimal(x)
+def decimal(x, silent=True):
+    #return decimal(x)
+    try:
+        return Decimal(x)
+    except Exception as e:
+        if silent:
+            return x
+        else:
+            raise e
 
-def string(x):
-    return str(x)
+def string(x, silent=True):
+    # return str(x)
+    try:
+        return str(x)
+    except Exception as e:
+        if silent:
+            return x
+        else:
+            raise e
 
-def isodate(x):
-    return isoparse(x)
+def isodate(x, silent=True):
+    # return isoparse(x)
+    try:
+        return isoparse(x)
+    except Exception as e:
+        if silent:
+            return x
+        else:
+            raise e
 
-def url(x):
-    return urlparse(x)
+def url(x, silent=True):
+    # return urlparse(x)
+    try:
+        return urlparse(x)
+    except Exception as e:
+        if silent:
+            return x
+        else:
+            raise e
