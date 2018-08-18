@@ -1,7 +1,8 @@
 from metaform import (
     convert,
     normalize,
-    metaplate
+    metaplate,
+    formatize
 )
 
 from copy import deepcopy
@@ -141,3 +142,32 @@ def test_make_and_apply_complex_template():
 
     assert ndata == answer
 
+
+import datetime
+from urllib.parse import ParseResult
+
+def test_formatization():
+    ndata = {
+        '_:username#string': 'L2174',
+        '_:autobiography#string': {
+            '_:body-text#string': '\n\n',
+            '_:creation-date#isodate': '2005-04-30T00:00:00',
+            '_:last-updated#isodate': '2005-05-01T00:00:00'},
+        '_:idea#object': [
+            {'_:url#url': 'http://www.na.com/airbag_20active#1118115294',
+             '_:title#string': 'airbag active'}]
+    }
+
+    expect = {
+        '_:username': str('L2174'),
+        '_:autobiography': {
+            '_:body-text': str('\n\n'),
+            '_:creation-date': datetime.datetime(2005, 4, 30, 0, 0),
+            '_:last-updated': datetime.datetime(2005, 5, 1, 0, 0)},
+        '_:idea': [
+            {'_:url': ParseResult(scheme='http', netloc='www.na.com', path='/airbag_20active', params='', query='', fragment='1118115294'),
+             '_:title': str('airbag active')}]
+    }
+
+
+    assert formatize(ndata) == expect

@@ -11,6 +11,7 @@ from metaform.utils import metaplate #noqa
 from metaform.utils import metaplate as template #noqa
 from metaform.utils import get_concept
 
+from metaform import converters
 
 def convert(key, value, schema, slugify=False, storage=None):
     """
@@ -115,6 +116,15 @@ def normalize(data, schema, slugify=True, storage=None):
     return remapped
 
 def translate(ndata, lang=None, refresh=False):
+    '''
+    Applies language conversion if available to the keys.
+
+    For example, based on metawiki, '_:date' is an a term,
+    namely: https://github.com/infamily/indb/wiki/date
+
+    And it has aliases in other languages. Translate takes
+    the first alias, and uses it to represent the key.
+    '''
 
     if lang:
         def visit(path, key, value):
@@ -131,3 +141,29 @@ def translate(ndata, lang=None, refresh=False):
 
     else:
         return ndata
+
+def formatize(ndata):
+    '''
+    Applies converters, if they match the name after hash.
+
+    For example, if the key is '_:date#isoformat', then the
+    converters.isoformat() is applied to the value, if exists.
+
+    It returns keys without the # sign.
+    '''
+
+    def visit(path, key, value):
+
+        if isinstance(key, str):
+            if '#' in str(key)[1:-1:]:
+                if isinstance(value, str):
+                    if hasattr(converters, key.rsplit('#', 1)[-1]):
+                        k = key.rsplit('#', 1)[0]
+                        v = getattr(converters, key.rsplit('#', 1)[-1])(value)
+                        return k, v
+
+                return key.rsplit('#', 1)[0], value
+
+        return key, value
+
+    return remap(ndata, visit=visit)
