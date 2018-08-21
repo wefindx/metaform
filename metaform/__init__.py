@@ -13,7 +13,7 @@ from metaform.utils import get_concept
 
 from metaform import converters
 
-import json
+import requests, json
 
 def convert(key, value, schema, slugify=False, storage=None):
     """
@@ -177,7 +177,10 @@ def load(path, parse=True):
     first record defines schema, and the rest are just
     simple records.
     '''
-    records = json.load(open(path))
+    if path.startswith('http'):
+        records = requests.get(path).json()
+    else:
+        records = json.load(open(path))
 
     ndata = normalize(records[1:], records[0:1])
 
