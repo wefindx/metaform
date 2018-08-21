@@ -13,6 +13,8 @@ from metaform.utils import get_concept
 
 from metaform import converters
 
+import json
+
 def convert(key, value, schema, slugify=False, storage=None):
     """
     Given a dictionary key, value, and schema specification,
@@ -167,3 +169,19 @@ def formatize(ndata):
         return key, value
 
     return remap(ndata, visit=visit)
+
+
+def load(path, parse=True):
+    '''
+    Loads records of infinity format, i.e., where
+    first record defines schema, and the rest are just
+    simple records.
+    '''
+    records = json.load(open(path))
+
+    ndata = normalize(records[1:], records[0:1])
+
+    if parse:
+        return formatize(ndata)
+
+    return ndata
