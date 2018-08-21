@@ -171,7 +171,7 @@ def formatize(ndata):
     return remap(ndata, visit=visit)
 
 
-def load(path, parse=True):
+def load(path, parse=False):
     '''
     Loads records of infinity format, i.e., where
     first record defines schema, and the rest are just
