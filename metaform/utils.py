@@ -81,6 +81,9 @@ def metaplate(data, with_self=True):
         'b': {'*': ''}
     }
     '''
+    if isinstance(data, list):
+        # TODO: reserved key
+        data = {'_#list#_': data}
 
     def sum_dicts(list_of_dicts):
         result = {}
@@ -108,6 +111,10 @@ def metaplate(data, with_self=True):
             if remapped:
                 if remapped[0]:
                     remapped[0].update({'*': ''})
+
+
+    if '_#list#_' in remapped.keys():
+        remapped = remapped['_#list#_']
 
     return remapped
 
