@@ -144,7 +144,7 @@ def translate(ndata, lang=None, refresh=False):
     else:
         return ndata
 
-def formatize(ndata):
+def formatize(ndata, ignore=[]):
     '''
     Applies converters, if they match the name after hash.
 
@@ -162,6 +162,8 @@ def formatize(ndata):
                     if hasattr(converters, key.rsplit('#', 1)[-1]):
                         k = key.rsplit('#', 1)[0]
                         v = getattr(converters, key.rsplit('#', 1)[-1])(value)
+                        if (k in ignore) or (key in ignore):
+                            return k, value
                         return k, v
 
                 return key.rsplit('#', 1)[0], value
@@ -177,14 +179,34 @@ def load(path, parse=False):
     first record defines schema, and the rest are just
     simple records.
     '''
-    if path.startswith('http'):
+
+    class Dict(dict):
+        def translate(self, lang=None, refresh=False):
+            return translate(self, lang=lang, refresh=refresh)
+
+        def formatize(self, ignore=[]):
+            return formatize(self, ignore=ignore)
+
+    class List(list):
+        def translate(self, lang=None, refresh=False):
+            return translate(self, lang=lang, refresh=refresh)
+
+        def formatize(self, ignore=[]):
+            return formatize(self, ignore=ignore)
+
+    if isinstnace(path, list):
+        records = path
+    elif path.startswith('http'):
         records = requests.get(path).json()
     else:
         records = json.load(open(path))
 
     ndata = normalize(records[1:], records[0:1])
 
+    ndata = List([Dict(item) for item in ndata])
+
     if parse:
-        return formatize(ndata)
+        return ndata.formatize()
+        # return formatize(ndata)
 
     return ndata
