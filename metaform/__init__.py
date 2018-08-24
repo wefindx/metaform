@@ -173,7 +173,7 @@ def formatize(ndata, ignore=[]):
     return remap(ndata, visit=visit)
 
 
-def load(path, parse=False):
+def load(path):
     '''
     Loads records of infinity format, i.e., where
     first record defines schema, and the rest are just
@@ -205,8 +205,14 @@ def load(path, parse=False):
 
     ndata = List([Dict(item) for item in ndata])
 
-    if parse:
-        return ndata.formatize()
-        # return formatize(ndata)
-
     return ndata
+
+
+def loads(data, schema):
+    '''
+    Loads records of infinity format given schema, data.
+    '''
+    if isinstance(data, list) and isinstance(schema, dict):
+        schema = [schema]
+
+    return load(data+schema)
