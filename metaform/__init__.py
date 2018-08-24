@@ -206,13 +206,3 @@ def load(path):
     ndata = List([Dict(item) for item in ndata])
 
     return ndata
-
-
-def loads(data, schema):
-    '''
-    Loads records of infinity format given schema, data.
-    '''
-    if isinstance(data, list) and isinstance(schema, dict):
-        schema = [schema]
-
-    return load(data+schema)
