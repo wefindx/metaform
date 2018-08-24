@@ -194,7 +194,7 @@ def load(path):
         def formatize(self, ignore=[]):
             return formatize(self, ignore=ignore)
 
-    if isinstnace(path, list):
+    if isinstance(path, list):
         records = path
     elif path.startswith('http'):
         records = requests.get(path).json()
