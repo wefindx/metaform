@@ -18,7 +18,7 @@ setup(
     author_email='mindey@qq.com',
     license='ASK FOR PERMISSIONS',
     packages = find_packages(exclude=['docs', 'tests*']),
-    install_requires=["metawiki", "boltons", "python-slugify", "typology", "tinydb"],
+    install_requires=["metawiki", "boltons", "python-slugify", "typology", "tinydb", "langsplit"],
     extras_require = {
         'test': ['coverage', 'pytest', 'pytest-cov'],
     },

@@ -1,6 +1,7 @@
 from boltons.timeutils import isoparse
 from urllib.parse import urlparse
 from decimal import Decimal
+import langsplit
 
 # TODO: refactor exceptions
 
@@ -73,3 +74,6 @@ def url(x, silent=True):
             return x
         else:
             raise e
+
+def imarkdown(x):
+    return x

@@ -15,6 +15,22 @@ from metaform import converters
 
 import requests, json
 
+
+class Dict(dict):
+    def translate(self, lang=None, refresh=False):
+        return translate(self, lang=lang, refresh=refresh)
+
+    def formatize(self, ignore=[]):
+        return formatize(self, ignore=ignore)
+
+class List(list):
+    def translate(self, lang=None, refresh=False):
+        return translate(self, lang=lang, refresh=refresh)
+
+    def formatize(self, ignore=[]):
+        return formatize(self, ignore=ignore)
+
+
 def convert(key, value, schema, slugify=False, storage=None):
     """
     Given a dictionary key, value, and schema specification,
@@ -170,7 +186,12 @@ def formatize(ndata, ignore=[]):
 
         return key, value
 
-    return remap(ndata, visit=visit)
+    result = remap(ndata, visit=visit)
+
+    if isinstance(ndata, list):
+        result = List(result)
+
+    return result
 
 
 def load(path):
@@ -179,20 +200,6 @@ def load(path):
     first record defines schema, and the rest are just
     simple records.
     '''
-
-    class Dict(dict):
-        def translate(self, lang=None, refresh=False):
-            return translate(self, lang=lang, refresh=refresh)
-
-        def formatize(self, ignore=[]):
-            return formatize(self, ignore=ignore)
-
-    class List(list):
-        def translate(self, lang=None, refresh=False):
-            return translate(self, lang=lang, refresh=refresh)
-
-        def formatize(self, ignore=[]):
-            return formatize(self, ignore=ignore)
 
     if isinstance(path, list):
         records = path
