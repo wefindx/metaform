@@ -7,29 +7,14 @@ from metaform.utils import (
 )
 
 # convenience alias #
+from metaform.schema_readers import get_schema #noqa
 from metaform.utils import metaplate #noqa
 from metaform.utils import metaplate as template #noqa
 from metaform.utils import get_concept
-
 from metaform import converters
 
+
 import requests, json
-
-
-class Dict(dict):
-    def translate(self, lang=None, refresh=False):
-        return translate(self, lang=lang, refresh=refresh)
-
-    def formatize(self, ignore=[]):
-        return formatize(self, ignore=ignore)
-
-class List(list):
-    def translate(self, lang=None, refresh=False):
-        return translate(self, lang=lang, refresh=refresh)
-
-    def formatize(self, ignore=[]):
-        return formatize(self, ignore=ignore)
-
 
 def convert(key, value, schema, slugify=False, storage=None):
     """
@@ -91,7 +76,7 @@ def convert(key, value, schema, slugify=False, storage=None):
 
     return key, value
 
-def normalize(data, schema, slugify=True, storage=None):
+def normalize(data, schema=None, slugify=True, storage=None):
     '''
     Combine data with schema and types in schema by zipping tree.
 
@@ -118,6 +103,9 @@ def normalize(data, schema, slugify=True, storage=None):
          {'https-www-wikidata-org-wiki-q185836#median': 12,
           'https-www-wikidata-org-wiki-q185836#average': 15}}]
     '''
+    if not schema:
+        if '*' in data.keys():
+            schema = get_schema(data['*'])
 
     def visit(path, key, value):
         try:
@@ -193,23 +181,8 @@ def formatize(ndata, ignore=[]):
 
     return result
 
-
-def load(path):
+def load(data):
     '''
-    Loads records of infinity format, i.e., where
-    first record defines schema, and the rest are just
-    simple records.
+    Applies normalize + formatize
     '''
-
-    if isinstance(path, list):
-        records = path
-    elif path.startswith('http'):
-        records = requests.get(path).json()
-    else:
-        records = json.load(open(path))
-
-    ndata = normalize(records[1:], records[0:1])
-
-    ndata = List([Dict(item) for item in ndata])
-
-    return ndata
+    return formatize(normalize(data))
