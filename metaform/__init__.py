@@ -181,8 +181,39 @@ def formatize(ndata, ignore=[]):
 
     return result
 
+
+class Dict(dict):
+
+    def format(self):
+        return formatize(normalize(self))
+
+    def render(self, lang, refresh=False):
+        return translate(normalize(self), lang=lang, refresh=refresh)
+
+
+class List(list):
+
+    def format(self):
+        return formatize([normalize(item) for item in self])
+
+    def render(self, lang, refresh=False):
+        return translate([normalize(item) for item in self], lang=lang, refresh=refresh)
+
+
 def load(data):
-    '''
-    Applies normalize + formatize
-    '''
-    return formatize(normalize(data))
+
+    if isinstance(data, list):
+        records = data
+    elif isinstance(data, dict):
+        records = data
+    elif data.startswith('http'):
+        records = requests.get(data).json()
+    else:
+        records = json.load(open(data))
+
+    if isinstance(records, list):
+        ndata = List([Dict(item) for item in records])
+    elif isinstance(records, dict):
+        ndata = Dict(records)
+
+    return ndata
