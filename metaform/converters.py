@@ -2,6 +2,7 @@ from boltons.timeutils import isoparse
 from urllib.parse import urlparse
 from decimal import Decimal
 import langsplit
+import datetime
 
 # TODO: refactor exceptions
 
@@ -69,6 +70,16 @@ def isodate(x, silent=True):
     # return isoparse(x)
     try:
         return isoparse(x)
+    except Exception as e:
+        if silent:
+            return x
+        else:
+            raise e
+
+def unixtime(x, silent=True):
+    # return isoparse(x)
+    try:
+        return datetime.utcfromtimestamp(x)
     except Exception as e:
         if silent:
             return x
