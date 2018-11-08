@@ -14,7 +14,7 @@ from typology.ontology.infinity import get_source
 
 MAX_HEADER_LEVEL_TO_LOOK = 7
 
-def include_extensions(schema, target):
+def include_extensions(schema, target, name=''):
 
     if '_:extends' in schema.keys():
         extends_url = schema['_:extends']
@@ -30,12 +30,15 @@ def include_extensions(schema, target):
                 del extends['*']
             if '_clients' in extends.keys():
                 del extends['_clients']
-            schema.update(extends)
+            extends.update(schema)
+            schema = extends
 
     clients = available_clients(target.text)
 
     if clients:
         schema['_clients'] = clients
+
+    schema['*'] = name
     return schema, target
 
 
@@ -49,9 +52,12 @@ def get_schema(path):
 
     '''
 
+
     if not os.path.exists(path):
         if not metawiki.isurl(path):
             path = metawiki.name_to_url(path)
+
+    ufn = metawiki.url_to_name(path)
 
     # Infinity/GitHub case:
     page = get_source(path)
@@ -100,7 +106,8 @@ def get_schema(path):
                     schema = values_to_name(schema)
 
                     # Expand, if has '_:extends' token.
-                    schema, target = include_extensions(schema, target)
+                    name = path.rsplit('/')[-1]
+                    schema, target = include_extensions(schema, target, ufn)
 
                     return schema
 
@@ -121,7 +128,7 @@ def get_schema(path):
                 schema = values_to_name(schema)
 
                 # Expand, if has '_:extends' token.
-                schema, target = include_extensions(schema, target)
+                schema, target = include_extensions(schema, target, ufn)
 
                 schemas[anchor_slug] = schema
 
