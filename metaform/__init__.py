@@ -184,7 +184,10 @@ def formatize(ndata, ignore=[]):
 
 class Dict(dict):
 
-    def format(self):
+    def format(self, lang=None, refresh=False):
+        if lang:
+            return translate(formatize(normalize(self)), lang=lang, refresh=refresh)
+
         return formatize(normalize(self))
 
     def render(self, lang, refresh=False):
@@ -193,7 +196,10 @@ class Dict(dict):
 
 class List(list):
 
-    def format(self):
+    def format(self, lang=None, refresh=False):
+        if lang:
+            return translate(formatize([normalize(item) for item in self]), lang=lang, refresh=refresh)
+
         return formatize([normalize(item) for item in self])
 
     def render(self, lang, refresh=False):
