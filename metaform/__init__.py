@@ -148,7 +148,7 @@ def translate(ndata, lang=None, refresh=False):
     else:
         return ndata
 
-def formatize(ndata, ignore=[]):
+def formatize(ndata, ignore=[], no_convert=[]):
     '''
     Applies converters, if they match the name after hash.
 
@@ -163,7 +163,8 @@ def formatize(ndata, ignore=[]):
         if isinstance(key, str):
             if '#' in str(key)[1:-1:]:
                 if type(value) in [str, int, float]:
-                    if hasattr(converters, key.rsplit('#', 1)[-1]):
+                    Format = key.rsplit('#', 1)[-1]
+                    if hasattr(converters, Format) and Format not in no_convert:
                         k = key.rsplit('#', 1)[0]
                         v = getattr(converters, key.rsplit('#', 1)[-1])(value)
                         if (k in ignore) or (key in ignore):
@@ -186,7 +187,7 @@ class Dict(dict):
 
     def format(self, lang=None, refresh=False):
         if lang:
-            return translate(formatize(normalize(self)), lang=lang, refresh=refresh)
+            return translate(formatize(normalize(self), no_convert=['url']), lang=lang, refresh=refresh)
 
         return formatize(normalize(self))
 
@@ -198,7 +199,7 @@ class List(list):
 
     def format(self, lang=None, refresh=False):
         if lang:
-            return translate(formatize([normalize(item) for item in self]), lang=lang, refresh=refresh)
+            return translate(formatize([normalize(item) for item in self], no_convert=['url']), lang=lang, refresh=refresh)
 
         return formatize([normalize(item) for item in self])
 
