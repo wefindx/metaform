@@ -10,6 +10,7 @@ import metawiki
 
 from boltons.iterutils import remap
 from typology.ontology.infinity import get_source
+# from typology.ontology.wikidata import Concept
 
 MAX_HEADER_LEVEL_TO_LOOK = 7
 
@@ -52,7 +53,11 @@ def get_schema(path):
         if not metawiki.isurl(path):
             path = metawiki.name_to_url(path)
 
+    # Infinity/GitHub case:
     page = get_source(path)
+
+    # Wikidata case:
+    # concept =
 
     anchor = None
 

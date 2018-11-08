@@ -123,7 +123,7 @@ def get_concept(value, refresh=False):
 
     if any(
         [str(value).startswith(it) for it in
-         list(metawiki.NAMESPACES.keys()) + ['https://github.com']]
+         list(metawiki.NAMESPACES.keys()) + ['https://github.com', 'https://www.wikidata.org']]
     ):
 
         Concept = Query()
