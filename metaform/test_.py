@@ -149,6 +149,7 @@ from urllib.parse import ParseResult
 def test_formatization():
     ndata = {
         '_:username#string': 'L2174',
+        '_:creation-date#unixtime': 1114819200,
         '_:autobiography#string': {
             '_:body-text#string': '\n\n',
             '_:creation-date#isodate': '2005-04-30T00:00:00',
@@ -160,6 +161,7 @@ def test_formatization():
 
     expect = {
         '_:username': str('L2174'),
+        '_:creation-date': datetime.datetime(2005, 4, 30, 0, 0),
         '_:autobiography': {
             '_:body-text': str('\n\n'),
             '_:creation-date': datetime.datetime(2005, 4, 30, 0, 0),

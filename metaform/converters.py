@@ -2,7 +2,7 @@ from boltons.timeutils import isoparse
 from urllib.parse import urlparse
 from decimal import Decimal
 import langsplit
-import datetime
+from datetime import datetime
 
 # TODO: refactor exceptions
 

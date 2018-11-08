@@ -162,7 +162,7 @@ def formatize(ndata, ignore=[]):
 
         if isinstance(key, str):
             if '#' in str(key)[1:-1:]:
-                if isinstance(value, str):
+                if type(value) in [str, int, float]:
                     if hasattr(converters, key.rsplit('#', 1)[-1]):
                         k = key.rsplit('#', 1)[0]
                         v = getattr(converters, key.rsplit('#', 1)[-1])(value)
