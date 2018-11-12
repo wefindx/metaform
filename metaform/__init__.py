@@ -1,3 +1,7 @@
+import importlib
+
+import os
+
 from boltons.iterutils import remap
 
 from metaform.utils import (
@@ -182,38 +186,58 @@ def formatize(ndata, ignore=[], no_convert=[]):
 
     return result
 
+def strip_star(data, do=True):
+    if do:
+        if isinstance(data, dict):
+            del data['*']
+        elif isinstance(data, list):
+            for i, item in enumerate(data):
+                del data[i]['*']
+    return data
 
 class Dict(dict):
 
-    def format(self, lang=None, refresh=False):
+    def format(self, lang=None, refresh=False, strip_asterisk=True):
         if lang:
-            return translate(formatize(normalize(self), no_convert=['url']), lang=lang, refresh=refresh)
+            return strip_star(
+                translate(formatize(normalize(self), no_convert=['url']), lang=lang, refresh=refresh),
+                do=strip_asterisk)
 
-        return formatize(normalize(self))
+        return strip_star(formatize(normalize(self)), do=strip_asterisk)
 
-    def render(self, lang, refresh=False):
-        return translate(normalize(self), lang=lang, refresh=refresh)
+    def render(self, lang, refresh=False, strip_asterisk=True):
+        return strip_star(translate(normalize(self), lang=lang, refresh=refresh), do=strip_asterisk)
 
 
 class List(list):
 
-    def format(self, lang=None, refresh=False):
+    def format(self, lang=None, refresh=False, strip_asterisk=True):
         if lang:
-            return translate(formatize([normalize(item) for item in self], no_convert=['url']), lang=lang, refresh=refresh)
+            return strip_star(
+                translate(formatize([normalize(item) for item in self], no_convert=['url']), lang=lang, refresh=refresh),
+                do=strip_asterisk)
 
-        return formatize([normalize(item) for item in self])
+        return strip_star(formatize([normalize(item) for item in self]), do=strip_asterisk)
 
-    def render(self, lang, refresh=False):
-        return translate([normalize(item) for item in self], lang=lang, refresh=refresh)
+    def render(self, lang, refresh=False, strip_asterisk=True):
+        return strip_star(
+            translate([normalize(item) for item in self], lang=lang, refresh=refresh),
+            do=strip_asterisk)
 
 
 def load(data):
+    '''
+    Reads data source, where each record has '*' attribute.
+
+    Examples:
+    >>> load('https://gist.github.com/mindey/2cdeecddab20d036b957cd0d306b7153')
+    '''
 
     if isinstance(data, list):
         records = data
     elif isinstance(data, dict):
         records = data
-    elif data.startswith('http'):
+    elif data.startswith('http://') or data.startswith('https://'):
         records = requests.get(data).json()
     else:
         records = json.load(open(data))
@@ -224,3 +248,126 @@ def load(data):
         ndata = Dict(records)
 
     return ndata
+
+def read(term):
+    '''
+    Reads term as source, where there is '_:readers' attribute.
+
+    The attribute has to specify one or more functions, that are generators of Dict objects.
+
+    Examples:
+    >>> read('::mindey/topic#halfbakery')
+    >>> read('https://github.com/mindey/-/wiki/topic#halfbakery')
+    '''
+    template = get_schema(term)
+
+    readers = template.get('_:readers')
+
+    if not readers:
+        raise Exception('Readers not found in template.')
+
+    if isinstance(readers, list):
+
+        for i, reader in enumerate(readers):
+            print(i+1, reader)
+
+        reader_id = input("Choose reader [1] ")
+
+        if not reader_id:
+            reader_id = 1
+        else:
+            reader_id = int(reader_id)
+
+        if reader_id not in range(1, len(readers)+1):
+            raise Exception("The choice does not exist.")
+
+        reader_id -= 1
+        reader = readers[reader_id]
+
+    elif isinstance(readers, str):
+        reader = readers
+    else:
+        raise Exception("Reader defined as anything other than string or list is not supported.")
+
+
+    SUPPORTED_PACKAGE_MANAGERS = ['pypi']
+
+    if reader.lower().split(':',1)[0] not in SUPPORTED_PACKAGE_MANAGERS:
+        raise Exception(
+            "Unknown package manager. " +
+            "Make sure the reader you chose starts with one of these: " +
+            "{}. Your chosen reader is: {}".format(
+                ', '.join(SUPPORTED_PACKAGE_MANAGERS),
+                reader
+            )
+        )
+
+    SUPPORTED_PACKAGES = ['pypi:drivers', 'pypi:subtools']
+
+    package_name = reader.split('.', 1)[0].lower()
+
+    if package_name not in SUPPORTED_PACKAGES:
+        raise Exception(
+            "Unsupported reader package. " +
+            "Make sure the reader package is one of these: " +
+            "{}. Your chosen reader is: {}".format(
+                ', '.join(SUPPORTED_PACKAGES),
+                package_name
+            )
+
+        )
+
+    packman, package = package_name.split(':')
+
+    # Make sure we have that package installed.
+    spec = importlib.util.find_spec(package)
+    if spec is None:
+        answer = input(package +" is not installed. Install it? [y/N] ")
+        if answer in ['y', 'Y']:
+            try:
+                #easy_install.main( ["-U", package_name] )
+                os.system('pip install --no-input -U {} --no-cache'.format(package))
+            except SystemExit as e:
+                pass
+        else:
+            raise Exception(package_name +" is required. Install it and run again.")
+    else:
+        # Check the version installed.
+        import pkg_resources
+        importlib.reload(pkg_resources)
+        installed_version = pkg_resources.get_distribution(package).version
+
+        # Check the latest version in PyPI
+        from yolk.pypi import CheeseShop
+
+        def get_lastest_version_number(package_name):
+            pkg, all_versions = CheeseShop().query_versions_pypi(package_name)
+            if len(all_versions):
+                return all_versions[0]
+            return None
+
+        latest_version = get_lastest_version_number(package)
+
+        if installed_version != latest_version:
+            answer = input('You are running {}=={}'.format(package,installed_version)+", but there is newer ({}) version. Upgrade it? [y/N] ".format(latest_version))
+            if answer in ['y', 'Y']:
+                try:
+                    os.system('pip install --no-input -U {} --no-cache'.format(package))
+                except SystemExit as e:
+                    pass
+
+
+    module = __import__(package)
+
+    # Get method and package:
+    namespace = reader.split('.', 1)[-1]
+
+    method = module
+    for name in namespace.split('.'):
+        method = getattr(method, name)
+
+    return method()
+
+def dump():
+    pass
+

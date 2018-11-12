@@ -18,10 +18,22 @@ setup(
     author_email='mindey@qq.com',
     license='ASK FOR PERMISSIONS',
     packages = find_packages(exclude=['docs', 'tests*']),
-    install_requires=["metawiki", "boltons", "python-slugify", "typology", "tinydb", "langsplit", "indb"],
+    install_requires=[
+        "metawiki",
+        "typology",
+        "python-slugify",
+        "tinydb",
+        "boltons",
+        "yolk3k",
+        "click"
+    ],
     extras_require = {
         'test': ['coverage', 'pytest', 'pytest-cov'],
     },
-    zip_safe=False
+    zip_safe=False,
+    entry_points = {
+        'console_scripts': [
+            'harvest=metaform.cli:harvest',
+        ],
+    }
 )
-
