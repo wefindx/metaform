@@ -249,7 +249,7 @@ def load(data):
 
     return ndata
 
-def read(term):
+def read(term, limit=None):
     '''
     Reads term as source, where there is '_:readers' attribute.
 
@@ -366,7 +366,7 @@ def read(term):
     for name in namespace.split('.'):
         method = getattr(method, name)
 
-    return method()
+    return method(limit=limit)
 
 def dump():
     pass
