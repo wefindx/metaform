@@ -9,7 +9,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='metaform',
-    version='0.4.9',
+    version='0.5.0',
     description='A utility for defining metadata for data types and formats.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -25,7 +25,8 @@ setup(
         "tinydb",
         "boltons",
         "yolk3k",
-        "click"
+        "click",
+        "pymongo"
     ],
     extras_require = {
         'test': ['coverage', 'pytest', 'pytest-cov'],

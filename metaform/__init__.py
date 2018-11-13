@@ -251,7 +251,7 @@ def load(data):
 
 def read(term, limit=None):
     '''
-    Reads term as source, where there is '_:readers' attribute.
+    Reads term as source, where there is '_:emitter' attribute.
 
     The attribute has to specify one or more functions, that are generators of Dict objects.
 
@@ -261,7 +261,7 @@ def read(term, limit=None):
     '''
     template = get_schema(term)
 
-    readers = template.get('_:readers')
+    readers = template.get('_:emitter')
 
     if not readers:
         raise Exception('Readers not found in template.')
