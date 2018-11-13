@@ -302,7 +302,11 @@ def read(term, limit=None):
             )
         )
 
-    SUPPORTED_PACKAGES = ['pypi:drivers', 'pypi:subtools']
+    SUPPORTED_PACKAGES = [
+        'pypi:metadrive',
+        'pypi:drivers',
+        'pypi:subtools'
+    ]
 
     package_name = reader.split('.', 1)[0].lower()
 
