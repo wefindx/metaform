@@ -2,4 +2,4 @@
 
 `pip install metaform`
 
-`$ harvest <resource>`
+`$ metasync <resource>`
