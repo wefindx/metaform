@@ -29,8 +29,8 @@ def metasync(resource, limit=None, output=None, db=None):
 
     for item in read(resource, limit=limit):
         url = item['-']
-        print('GET:', url, end='')
 
+        print('GET:', url)
 
         fn = slug(url)[:FILENAME_LENGTH_LIMIT-5]+'.json'
 
@@ -40,4 +40,4 @@ def metasync(resource, limit=None, output=None, db=None):
         with open(fn, 'w') as f:
             item['*'] = resource
             f.write(json.dumps(item))
-        print(' -> ' + fn)
+
