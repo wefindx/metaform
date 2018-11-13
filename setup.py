@@ -9,7 +9,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='metaform',
-    version='0.4.7',
+    version='0.4.8',
     description='A utility for defining metadata for data types and formats.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -33,7 +33,7 @@ setup(
     zip_safe=False,
     entry_points = {
         'console_scripts': [
-            'harvest=metaform.cli:harvest',
+            'metasync=metaform.cli:metasync',
         ],
     }
 )
