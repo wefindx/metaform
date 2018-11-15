@@ -1,7 +1,11 @@
-from boltons.timeutils import isoparse
+#from boltons.timeutils import isoparse
 from urllib.parse import urlparse
 from decimal import Decimal
 from datetime import datetime
+
+from dateutil.parser import parse as dateparse
+from datetime import timezone
+
 
 # TODO: refactor exceptions
 
@@ -68,7 +72,7 @@ def string(x, silent=True):
 def isodate(x, silent=True):
     # return isoparse(x)
     try:
-        return isoparse(x)
+        return dateparse(x)
     except Exception as e:
         if silent:
             return x

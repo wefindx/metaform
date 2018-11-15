@@ -9,7 +9,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='metaform',
-    version='0.5.3',
+    version='0.5.4',
     description='A utility for defining metadata for data types and formats.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -21,6 +21,7 @@ setup(
     install_requires=[
         "metawiki",
         "metadir",
+        "python-dateutil",
         "typology",
         "python-slugify",
         "tinydb",
