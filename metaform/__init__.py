@@ -17,7 +17,7 @@ from metaform.utils import metaplate as template #noqa
 from metaform.utils import get_concept
 from metaform import converters
 
-
+import pymongo
 import requests, json
 
 def convert(key, value, schema, slugify=False, storage=None):
@@ -232,6 +232,9 @@ def load(data):
     Examples:
     >>> load('https://gist.github.com/mindey/2cdeecddab20d036b957cd0d306b7153')
     '''
+
+    if isinstance(data, pymongo.cursor.Cursor):
+        data = list(data)
 
     if isinstance(data, list):
         records = data
