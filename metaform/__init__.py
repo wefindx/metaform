@@ -251,6 +251,8 @@ def load(data):
 
 def read(term, limit=None):
     '''
+    calls '_:emitter'
+
     Reads term as source, where there is '_:emitter' attribute.
 
     The attribute has to specify one or more functions, that are generators of Dict objects.
