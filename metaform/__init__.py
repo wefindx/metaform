@@ -16,6 +16,7 @@ from metaform.utils import metaplate #noqa
 from metaform.utils import metaplate as template #noqa
 from metaform.utils import get_concept
 from metaform import converters
+import metawiki
 
 import pymongo
 import requests, json
@@ -197,6 +198,59 @@ def strip_star(data, do=True):
 
 class Dict(dict):
 
+    # def __init__(self, *args, **kwargs):
+    #     self.update(*args, **kwargs)
+    #     if self.get('*'):
+    #         print(self.get('*'))
+
+    def start(self):
+        ''' Initialize methods.
+        TODO: To automate in __init__ later. '''
+
+        url = self.get('-')
+        schema = get_schema(self['*'])
+        concept = metawiki.url_to_name(self['*'])
+        service_name = concept.rsplit('#',1)[-1]
+        class_name = concept.rsplit('/',1)[-1].split('#',1)[0].title()
+
+        if '_:emitter' in schema.keys():
+            if schema['_:emitter'].startswith('PyPI:metadrive.'):
+
+                # from metadrive.[service_name].[api] import class_name
+                api = importlib.import_module(
+                    'metadrive.{service_name}.api'.format(
+                        service_name=service_name))
+
+                # Map actions to interface.
+                Klass = getattr(api, class_name)
+
+                # # from metadrive.[service_name] import login
+                if self.get('+'):
+                    service = importlib.import_module(
+                        'metadrive.{service_name}'.format(
+                            service_name=service_name))
+
+                    login = getattr(service, 'login')
+                    session = login()
+                    interface = Klass(url, session)
+
+                    print('SUCCESSFULLY LOGGED IN')
+                    # mapping interface from instance
+                    for action in dir(interface):
+                        if not action.startswith('__'):
+                            setattr(self, action, getattr(interface, action))
+
+                else:
+                    interface = None
+
+                    print('COULD NOT LOGIN')
+
+                    # mapping interface from class
+                    for action in Klass.__dict__:
+                        if not action.startswith('__'):
+                            setattr(self, action, Klass.__dict__[action])
+
+
     def format(self, lang=None, refresh=False, strip_asterisk=True):
         if lang:
             return strip_star(
@@ -207,7 +261,6 @@ class Dict(dict):
 
     def render(self, lang, refresh=False, strip_asterisk=True):
         return strip_star(translate(normalize(self), lang=lang, refresh=refresh), do=strip_asterisk)
-
 
 class List(list):
 
@@ -223,7 +276,6 @@ class List(list):
         return strip_star(
             translate([normalize(item) for item in self], lang=lang, refresh=refresh),
             do=strip_asterisk)
-
 
 def load(data):
     '''
