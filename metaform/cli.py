@@ -44,9 +44,9 @@ def harvest(resource, limit=None, output=None, db=None):
             db = getattr(pymongo.MongoClient(
                 dbinfo.scheme+'://'+dbinfo.netloc), dbname)
 
-    else:
-        raise Exception(
-            'Unknown scheme, got: {}.'.format(dbinfo.scheme))
+        else:
+            raise Exception(
+                'Unknown scheme, got: {}.'.format(dbinfo.scheme))
 
     if limit:
         limit = int(limit)
@@ -74,6 +74,6 @@ def harvest(resource, limit=None, output=None, db=None):
             if output:
                 ID = os.path.join(output, ID)
 
-            with open(fn, 'w') as f:
+            with open(ID, 'w') as f:
                 print('FILE:INFO:', item['-'])
                 f.write(json.dumps(item))
