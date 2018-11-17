@@ -10,6 +10,7 @@ from . import converters
 
 import metawiki
 import typology
+from collections import defaultdict
 
 conf_path = os.path.join( str(pathlib.Path.home()), '.ooio')
 
@@ -149,3 +150,82 @@ def get_concept(value, refresh=False):
             return result[0]['concept']
     else:
         return
+
+
+def get_concept_paths(data, k=[], exclude=[dict, list]):
+    '''
+    Given, something like:
+    >>> get_concept_paths({'a': {'b': [{'c': 1}]}, 'x': {'c': 2}}, 'c')
+
+    Returns a list of paths, where given concept ('c') is
+    >>> [['a', 'b', 0, 'c'], ['x', 'c']] # = p
+
+    So that we can retrieve them with dictget()
+    '''
+
+    if isinstance(k, list):
+        paths = {key: [] for key in k}
+    else:
+        paths = []
+
+    if not k:
+        paths = defaultdict(list)
+
+    def visit(path, key, value):
+        if isinstance(k, list):
+            if key in k or not k:
+                if type(value) not in exclude:
+                    paths[key].append(list(path) + [key])
+        else:
+            if key == k or not k:
+                if type(value) not in exclude:
+                    paths.append(list(path) + [key])
+        return key, value
+
+    remap(data, visit=visit)
+
+    return paths
+
+
+def get_match_matrix(
+        source_schema_list, exclude=[dict, list]):
+    '''
+    Given a few sourcemetaform.utils.match_sources([ {'a': {'c': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}} ])metaform.utils.match_sources([ {'a': {'c': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}} ])metaform.utils.match_sources([ {'a': {'c': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}} ]) schemas, e.g.
+    >>> get_matche_matrix([{'a': {'b': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}}])
+
+    >>> {'n': [['n'], ['d', 'n']]}
+    >>> metaform.utils.get_match_matrix([ {'a': {'c': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}} ])
+    >>>
+
+    Returns found matching keys, that can be merged.
+    '''
+
+    field_availability_list = [
+        get_concept_paths(source, exclude=exclude)
+        for source in source_schema_list
+    ]
+
+    common_field_set = set.intersection(*map(set, field_availability_list))
+
+    match = {}
+    for field in common_field_set:
+        lists = []
+        for source in field_availability_list:
+            lists.append(source[field][0])
+        match[field] = lists
+
+    return match
+
+
+def match(dict_list, exclude=[dict, list]):
+
+    results = {}
+
+    matches = get_match_matrix(dict_list, exclude=exclude)
+
+    for key in matches:
+        results.update(
+            {key: [dictget(source, matches[key][i])
+             for i, source in enumerate(dict_list)]})
+
+    return results

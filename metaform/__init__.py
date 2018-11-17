@@ -7,7 +7,8 @@ from boltons.iterutils import remap
 from metaform.utils import (
     dictget,
     metapath,
-    slug
+    slug,
+    match
 )
 
 # convenience alias #
@@ -432,3 +433,36 @@ def read(term, limit=None):
 def dump():
     pass
 
+
+
+def align(source_list, key_list=None):
+    '''
+    source_list : list of lists or generators for records
+    key_list : list of keys of interest
+
+    >>> align(s, k)
+
+    returns a single list or generator, that only has fields selected, no matter what depth the fields were found in
+
+    >>> metaform.align([ [{'a': {'c': 'X'}, 'n': 1}], [{'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}}] ])
+    [{'c': ['X', 'Y'], 'n': [1, 2]}]
+
+    # so you can import pandas
+    # df = pandas.concat(
+        [pandas.DataFrame(item) for item in metaform.align(...)]
+    )
+    # to get
+    '''
+    results = []
+    for ntuple in zip(*source_list):
+        results.append(match(ntuple))
+
+    return results
+
+def dfalign(source_list, key_list=None):
+    import pandas
+
+    return pandas.concat(
+        [pandas.DataFrame(item)
+         for item in
+         align(source_list, key_list=None)]).reindex()

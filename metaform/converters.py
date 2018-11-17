@@ -89,15 +89,16 @@ def unixtime(x, silent=True):
         else:
             raise e
 
-def url(x, silent=True):
-    # return urlparse(x)
-    try:
-        return urlparse(x)
-    except Exception as e:
-        if silent:
-            return x
-        else:
-            raise e
+#
+# def url(x, silent=True):
+#     # return urlparse(x)
+#     try:
+#         return urlparse(x)
+#     except Exception as e:
+#         if silent:
+#             return x
+#         else:
+#             raise e
 
 def imarkdown(x):
     return x
