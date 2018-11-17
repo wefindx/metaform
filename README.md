@@ -24,4 +24,15 @@ password: <wefindx_pypi_passwd>
 ```
 
 Then, use:
-`python setup.py sdist upload internal`
+`python setup.py sdist upload -r internal`
+
+Or also, use:
+`pip install metaform -r internal`
+
+
+And then, `requirements.txt` may look like so:
+`
+metadir==0.0.1
+--extra-index-url https://<wefindx_pypi_passwd>@pypi.wefindx.io/<wefindx_pypi_username>/
+metaform==0.7.0
+`
