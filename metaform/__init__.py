@@ -191,10 +191,12 @@ def formatize(ndata, ignore=[], no_convert=[]):
 def strip_star(data, do=True):
     if do:
         if isinstance(data, dict):
-            del data['*']
+            if data.get('*'):
+                del data['*']
         elif isinstance(data, list):
             for i, item in enumerate(data):
-                del data[i]['*']
+                if data[i].get('*'):
+                    del data[i]['*']
     return data
 
 class Dict(dict):
@@ -278,13 +280,45 @@ class List(list):
             translate([normalize(item) for item in self], lang=lang, refresh=refresh),
             do=strip_asterisk)
 
-def load(data):
+def wrap(records: list, schema: dict):
+    '''
+    #records = [dict(row) for row in csv.DictReader(open('sample1.csv'))]
+    #schema = metaform.get_schema('https://github.com/mindey/-/wiki/something#sample1')
+    '''
+    return List([Dict(record) for record in normalize(records, [schema])])
+
+def load(data, schema=None):
     '''
     Reads data source, where each record has '*' attribute.
 
     Examples:
     >>> load('https://gist.github.com/mindey/2cdeecddab20d036b957cd0d306b7153')
     '''
+
+    if isinstance(data, str):
+        if data.endswith('.csv'):
+            filename = data.rsplit('/',1)[-1]
+            import csv
+            records = [dict(row) for row in csv.DictReader(open(data))]
+            if 'SCANME.md' in os.listdir('.'):
+                import yaml
+                if not schema:
+                    scanme = yaml.load(open('SCANME.md').read().split('```yaml\n',1)[-1].split('\n```',1)[0])
+                    schema = get_schema(scanme.get(filename).get('*'))
+
+                if schema:
+                    return wrap(records, schema)
+                else:
+                    # No schema
+                    print('No schema found. Specify it in SCANME.md or provide schema parameter.')
+                    return records
+            else:
+                if schema:
+                    return wrap(records, schema)
+                else:
+                    # No schema
+                    print('No schema found. Specify it in SCANME.md or provide schema parameter.')
+                    return records
 
     if isinstance(data, pymongo.cursor.Cursor):
         data = list(data)
@@ -466,3 +500,4 @@ def dfalign(source_list, key_list=None):
         [pandas.DataFrame(item)
          for item in
          align(source_list, key_list=None)]).reindex()
+

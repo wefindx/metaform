@@ -29,6 +29,7 @@ setup(
         "boltons",
         "yolk3k",
         "click",
+        "PyYAML",
         "pymongo"
     ],
     extras_require = {
