@@ -11,6 +11,7 @@ from . import converters
 import metawiki
 import typology
 from collections import defaultdict
+from copy import deepcopy
 
 conf_path = os.path.join( str(pathlib.Path.home()), '.ooio')
 
@@ -229,3 +230,156 @@ def match(dict_list, exclude=[dict, list]):
              for i, source in enumerate(dict_list)]})
 
     return results
+
+def getx(data, path, inany=False):
+    if not inany:
+        try:
+            return dictget(data, path)
+        except:
+            return None
+    else:
+        oneup = dictget(data, path[:-1])
+        if isinstance(oneup, list):
+            possible_paths = [path[:-1]+(i,)+path[-1:] for i in range(len(oneup))]
+            for p in possible_paths:
+                try:
+                    item = dictget(data, p)
+                    break
+                except:
+                    item = None
+            if item is not None:
+                return p, item
+            else:
+                return None
+
+def setx(data, path, value, other):
+    '''
+    Example:
+    >>> setx({'a': 1, 'b': 2}, ['c', 0, 'd'], 8, {'c': [{'d': 12}]})
+    {'a': 1, 'b': 2, 'c': [{'d': 8}]}
+    '''
+    r = data
+    i = []
+    for p in path[:-1]:
+        i += [p]
+
+        if (isinstance(r, dict) and (p not in r.keys())) or \
+           (isinstance(r, list) and (p not in range(len(r)))):
+            try:
+                other_type = type(getx(other, i)) # [], {}
+            except:
+                other_type = dict
+
+            if isinstance(r, dict):
+                r[p] = other_type()
+            elif isinstance(r, list):
+                r += [other_type()]
+            else:
+                print('hmm')
+
+        r = r[p]
+
+    try:
+        r[path[-1]] = value
+    except:
+        # do nothing #
+        pass
+
+    return data
+
+def _add(a, b):
+    a = deepcopy(a)
+    def visit(path, key, value):
+        fpath = path + (key,)
+        val = getx(a, fpath)
+
+        if val is not None:
+            if type(val) != type(value):
+                new_val = [val, value]
+            elif hasattr(val, '__add__'):
+                new_val = val + value
+            else:
+                new_val = [val, value]
+            setx(a, fpath, new_val, b)
+        else:
+            setx(a, fpath, value, b)
+
+        return key, value
+
+    sink = remap(b, visit=visit)
+    return a
+
+
+def delx(data, path):
+    '''
+    >>> delx({'a': 3, 'b': [2, {'x': 'y'}], 'c': 3, 'd': 4}, ['b', 1, 'x'])
+    {'a': 3, 'b': [2, {}], 'c': 3, 'd': 4}
+    >>> delx({'a': 3, 'b': [2, {'x': 'y'}], 'c': 3, 'd': 4}, ['b', 0])
+    '''
+    # data = deepcopy(data)
+
+    r = data
+    for p in path[:-1]:
+        r = r[p]
+    del r[path[-1]]
+    if not r:
+        del r
+
+    return data
+
+
+def _sub(a, b):
+    '''
+    >>> _sub({'a': 3, 'b': [2, {'x': 'y'}], 'c': 3, 'd': 4},
+             {'a': 2, 'b': {'x': 'y'}, 'c': 3, 'd': 4})
+
+    {'a': 1, 'b': 2}
+    '''
+    a = deepcopy(a)
+    a['___previous_was_list___'] = False
+    def visit(path, key, value):
+        fpath = path + (key,)
+        vala = getx(a, fpath)
+        valb = value
+
+        if isinstance(getx(a, fpath[:-1]), list):
+            valA = getx(a, fpath, inany=True)
+        else:
+            valA = None
+
+        if vala is not None:
+            if type(vala) != type(valb):
+                if not isinstance(vala, list):
+                    vala = [vala]
+                if not isinstance(valb, list):
+                    valb = [valb]
+                new_val = [v for v in vala if v in valb]
+                if len(new_val) == 1:
+                    new_val = new_val[0]
+                if not a['___previous_was_list___']:
+                    setx(a, fpath, new_val, b)
+                a['___previous_was_list___'] = False
+                #print('>>', a, (vala, valb))
+            elif hasattr(vala, '__sub__'):
+                new_val = vala - valb
+                if not a['___previous_was_list___']:
+                    if new_val:
+                        setx(a, fpath, new_val, b)
+                    else:
+                        delx(a, fpath)
+
+        else:
+            if valA is not None:
+                #print(valA)
+                npath, _ = valA
+                #print('->', a)
+                delx(a, npath[:-1])
+                #print('-<', a)
+                a['___previous_was_list___'] = True
+
+
+        return key, value
+
+    sink = remap(b, visit=visit)
+    del a['___previous_was_list___']
+    return a

@@ -8,7 +8,9 @@ from metaform.utils import (
     dictget,
     metapath,
     slug,
-    match
+    match,
+    _add,
+    _sub
 )
 
 # convenience alias #
@@ -205,6 +207,12 @@ class Dict(dict):
     #     self.update(*args, **kwargs)
     #     if self.get('*'):
     #         print(self.get('*'))
+
+    def __add__(self, other):
+        return _add(self, other)
+
+    def __sub__(self, other):
+        return _sub(self, other)
 
     def start(self):
         ''' Initialize methods.
