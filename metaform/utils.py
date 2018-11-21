@@ -191,7 +191,8 @@ def get_concept_paths(data, k=[], exclude=[dict, list]):
 def get_match_matrix(
         source_schema_list, exclude=[dict, list]):
     '''
-    Given a few sourcemetaform.utils.match_sources([ {'a': {'c': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}} ])metaform.utils.match_sources([ {'a': {'c': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}} ])metaform.utils.match_sources([ {'a': {'c': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}} ]) schemas, e.g.
+    Given a few source schemas, e.g.
+    metaform.utils.match_sources([ {'a': {'c': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}} ])
     >>> get_matche_matrix([{'a': {'b': 'X'}, 'n': 1}, {'b': {'a': {'c': 'Y'}}, 'd': {'n': 2}}])
 
     >>> {'n': [['n'], ['d', 'n']]}

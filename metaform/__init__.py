@@ -1,6 +1,7 @@
 import importlib
 
 import os
+import re
 
 from boltons.iterutils import remap
 
@@ -452,13 +453,22 @@ def read(term, limit=None):
 
         latest_version = get_lastest_version_number(package)
 
-        if installed_version != latest_version:
-            answer = input('You are running {}=={}'.format(package,installed_version)+", but there is newer ({}) version. Upgrade it? [y/N] ".format(latest_version))
-            if answer in ['y', 'Y']:
-                try:
-                    os.system('pip install --no-input -U {} --no-cache'.format(package))
-                except SystemExit as e:
-                    pass
+
+        def cmp_version(version1, version2):
+            def norm(v):
+                return [int(x) for x in re.sub(r'(\.0+)*$','', v).split(".")]
+            return cmp(norm(version1), norm(version2))
+
+        if latest_version is not None:
+            if cmp_version(installed_version,latest_version) < 0:
+                answer = input('You are running {}=={}'.format(package,installed_version)+", but there is newer ({}) version. Upgrade it? [y/N] ".format(latest_version))
+                if answer in ['y', 'Y']:
+                    try:
+                        os.system('pip install --no-input -U {} --no-cache'.format(package))
+                    except SystemExit as e:
+                        pass
+
+
 
 
     module = __import__(package)
