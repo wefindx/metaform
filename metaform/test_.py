@@ -167,7 +167,7 @@ def test_formatization():
             '_:creation-date': datetime.datetime(2005, 4, 30, 0, 0),
             '_:last-updated': datetime.datetime(2005, 5, 1, 0, 0)},
         '_:idea': [
-            {'_:url': ParseResult(scheme='http', netloc='www.na.com', path='/airbag_20active', params='', query='', fragment='1118115294'),
+            {'_:url': 'http://www.na.com/airbag_20active#1118115294',
              '_:title': str('airbag active')}]
     }
 

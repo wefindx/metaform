@@ -191,16 +191,6 @@ def formatize(ndata, ignore=[], no_convert=[]):
 
     return result
 
-def strip_star(data, do=True):
-    if do:
-        if isinstance(data, dict):
-            if data.get('*'):
-                del data['*']
-        elif isinstance(data, list):
-            for i, item in enumerate(data):
-                if data[i].get('*'):
-                    del data[i]['*']
-    return data
 
 class Dict(dict):
 
@@ -263,31 +253,25 @@ class Dict(dict):
                             setattr(self, action, Klass.__dict__[action])
 
 
-    def format(self, lang=None, refresh=False, strip_asterisk=True):
+    def format(self, lang=None, refresh=False):
         if lang:
-            return strip_star(
-                translate(formatize(normalize(self), no_convert=['url']), lang=lang, refresh=refresh),
-                do=strip_asterisk)
+            return translate(formatize(normalize(self), no_convert=['url']), lang=lang, refresh=refresh)
 
-        return strip_star(formatize(normalize(self)), do=strip_asterisk)
+        return formatize(normalize(self))
 
-    def render(self, lang, refresh=False, strip_asterisk=True):
-        return strip_star(translate(normalize(self), lang=lang, refresh=refresh), do=strip_asterisk)
+    def render(self, lang, refresh=False):
+        return translate(normalize(self), lang=lang, refresh=refresh)
 
 class List(list):
 
-    def format(self, lang=None, refresh=False, strip_asterisk=True):
+    def format(self, lang=None, refresh=False):
         if lang:
-            return strip_star(
-                translate(formatize([normalize(item) for item in self], no_convert=['url']), lang=lang, refresh=refresh),
-                do=strip_asterisk)
+            return translate(formatize([normalize(item) for item in self], no_convert=['url']), lang=lang, refresh=refresh)
 
-        return strip_star(formatize([normalize(item) for item in self]), do=strip_asterisk)
+        return formatize([normalize(item) for item in self])
 
     def render(self, lang, refresh=False, strip_asterisk=True):
-        return strip_star(
-            translate([normalize(item) for item in self], lang=lang, refresh=refresh),
-            do=strip_asterisk)
+        return translate([normalize(item) for item in self], lang=lang, refresh=refresh)
 
 def wrap(records: list, schema: dict):
     '''
