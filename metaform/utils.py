@@ -232,6 +232,7 @@ def match(dict_list, exclude=[dict, list]):
 
     return results
 
+
 def getx(data, path, inany=False):
     if not inany:
         try:
