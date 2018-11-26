@@ -199,7 +199,7 @@ class Dict(dict):
     def __init__(self, *args, **kwargs):
         self.update(*args, **kwargs)
 
-    def format(self, lang=None, schema=None, refresh=False):
+    def format(self, schema=None, lang=None, refresh=False):
         if lang:
             return translate(formatize(normalize(self, schema=schema), no_convert=['url']), lang=lang, refresh=refresh)
 
@@ -264,7 +264,7 @@ class Dict(dict):
 
 class List(list):
 
-    def format(self, lang=None, schema=None, refresh=False):
+    def format(self, schema=None, lang=None, refresh=False):
         if lang:
             return translate(formatize([normalize(item, schema=schema) for item in self], no_convert=['url']), lang=lang, refresh=refresh)
 
