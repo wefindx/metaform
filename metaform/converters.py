@@ -29,6 +29,16 @@ def integer(x, silent=True):
         else:
             raise e
 
+def decimal(x, silent=True):
+    #return float(x)
+    try:
+        return float(x)
+    except Exception as e:
+        if silent:
+            return x
+        else:
+            raise e
+
 def rational(x, silent=True):
     #return float(x)
     try:
