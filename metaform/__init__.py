@@ -165,6 +165,8 @@ def formatize(ndata, ignore=[], no_convert=[]):
     converters.isoformat() is applied to the value, if exists.
 
     It returns keys without the # sign.
+
+    no_convert: list of types, not to apply conversion, e.g., ['url', 'decimal']
     '''
 
     def visit(path, key, value):
@@ -194,10 +196,17 @@ def formatize(ndata, ignore=[], no_convert=[]):
 
 class Dict(dict):
 
-    # def __init__(self, *args, **kwargs):
-    #     self.update(*args, **kwargs)
-    #     if self.get('*'):
-    #         print(self.get('*'))
+    def __init__(self, *args, **kwargs):
+        self.update(*args, **kwargs)
+
+    def format(self, lang=None, schema=None, refresh=False):
+        if lang:
+            return translate(formatize(normalize(self, schema=schema), no_convert=['url']), lang=lang, refresh=refresh)
+
+        return formatize(normalize(self, schema=schema))
+
+    def render(self, lang, schema=None, refresh=False):
+        return translate(normalize(self, schema=schema), lang=lang, refresh=refresh)
 
     def __add__(self, other):
         return _add(self, other)
@@ -253,25 +262,16 @@ class Dict(dict):
                             setattr(self, action, Klass.__dict__[action])
 
 
-    def format(self, lang=None, refresh=False):
-        if lang:
-            return translate(formatize(normalize(self), no_convert=['url']), lang=lang, refresh=refresh)
-
-        return formatize(normalize(self))
-
-    def render(self, lang, refresh=False):
-        return translate(normalize(self), lang=lang, refresh=refresh)
-
 class List(list):
 
-    def format(self, lang=None, refresh=False):
+    def format(self, lang=None, schema=None, refresh=False):
         if lang:
-            return translate(formatize([normalize(item) for item in self], no_convert=['url']), lang=lang, refresh=refresh)
+            return translate(formatize([normalize(item, schema=schema) for item in self], no_convert=['url']), lang=lang, refresh=refresh)
 
-        return formatize([normalize(item) for item in self])
+        return formatize([normalize(item, schema=schema) for item in self])
 
-    def render(self, lang, refresh=False, strip_asterisk=True):
-        return translate([normalize(item) for item in self], lang=lang, refresh=refresh)
+    def render(self, lang, schema=None, refresh=False):
+        return translate([normalize(item, schema=schema) for item in self], lang=lang, refresh=refresh)
 
 def wrap(records: list, schema: dict):
     '''
