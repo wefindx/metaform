@@ -301,7 +301,10 @@ def _add(a, b):
             elif hasattr(val, '__add__'):
                 new_val = val + value
             else:
-                new_val = [val, value]
+                if val == value:
+                    new_val = val
+                else:
+                    new_val = [val, value]
             setx(a, fpath, new_val, b)
         else:
             setx(a, fpath, value, b)
