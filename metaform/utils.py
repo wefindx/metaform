@@ -298,13 +298,20 @@ def _add(a, b):
         if val is not None:
             if type(val) != type(value):
                 new_val = [val, value]
-            elif hasattr(val, '__add__'):
-                new_val = val + value
             else:
-                if val == value:
-                    new_val = val
+                # If upper element is concatable, don't add item values per se.
+                if type(getx(a, fpath[:-1])) in [list, tuple]:
+                    if type(getx(b, fpath[:-1])) in [list, tuple]:
+                        return key, value
+
+                if hasattr(val, '__add__'):
+                    new_val = val + value
                 else:
-                    new_val = [val, value]
+                    if val == value:
+                        new_val = val
+                    else:
+                        new_val = [val, value]
+
             setx(a, fpath, new_val, b)
         else:
             setx(a, fpath, value, b)
