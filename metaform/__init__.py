@@ -200,6 +200,11 @@ class Dict(dict):
         self.update(*args, **kwargs)
 
     def format(self, schema=None, lang=None, refresh=False):
+
+        if isinstance(schema, str) and len(schema) <= 3:
+            lang = schema
+            schema = None
+
         if lang:
             return translate(formatize(normalize(self, schema=schema), no_convert=['url']), lang=lang, refresh=refresh)
 
@@ -265,6 +270,11 @@ class Dict(dict):
 class List(list):
 
     def format(self, schema=None, lang=None, refresh=False):
+
+        if isinstance(schema, str) and len(schema) <= 3:
+            lang = schema
+            schema = None
+
         if lang:
             return translate(formatize([normalize(item, schema=schema) for item in self], no_convert=['url']), lang=lang, refresh=refresh)
 
