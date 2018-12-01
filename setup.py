@@ -9,7 +9,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='metaform',
-    version='0.8.4',
+    version='0.8.5',
     description='A utility for defining metadata for data types and formats.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -28,17 +28,11 @@ setup(
         "tinydb",
         "boltons",
         "yolk3k",
-        "click",
         "PyYAML",
         "pymongo"
     ],
     extras_require = {
         'test': ['coverage', 'pytest', 'pytest-cov'],
     },
-    zip_safe=False,
-    entry_points = {
-        'console_scripts': [
-            'harvest=metaform.cli:harvest',
-        ],
-    }
+    zip_safe=False
 )
