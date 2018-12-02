@@ -173,3 +173,54 @@ def test_formatization():
 
 
     assert formatize(ndata) == expect
+
+from metaform import (
+    Dict, List
+)
+
+def test_dict_addition_1():
+    '''
+    testing Dict.__add__
+    '''
+    # It should work for any Dict/List like JSONs.
+
+    a = Dict({'x': 1})
+    b = Dict({'x': 1})
+    c = Dict({'y': 1})
+    d = Dict({'y': [1]})
+    e = Dict({'z': {'?': 1}})
+    f = Dict({'z': {'?': [1]}})
+
+    assert a+b == {'x': 2}
+    assert a+c == {'x': 1, 'y': 1}
+    assert a+b+c == {'x': 2, 'y': 1}
+    assert d+d == {'y': [1,1]}
+    assert a+d == {'x': 1, 'y': [1]}
+
+    A = Dict({'x': {'y': {'z': 1}, 'u': 2}, 'm': 1, 'n': 2})
+    B = Dict({'x': {'y': {'z': 2}, 'u': 8}, 'm': [2], 'n': 3})
+    C = Dict({'x': {'y': [{'1': 'Thing A'}, {'2': 'Thing B'}]}})
+    D = Dict({'x': {'y': [{'3': 'Thing C'}, {'4': 'Thing D'}]}})
+
+    # Problematic:
+    assert c+d == {'y': [1,[1]]}
+    # SHOULD BE: {'y': [1,1]}
+    assert d+c == {'y': [[1], 1]}
+    # SHOULD BE: {'y': [1,1]}
+    assert e+f == {'z': [{'?': [1, [1]]}, {'?': [1]}]}
+    # SHOULD BE: {'z': {'?': [1,1]]}
+    assert A+B == {'x': [{'y': [{'z': 3}, {'z': 2}], 'u': 10}, {'y': {'z': 2}, 'u': 8}], 'm': [1, [2]], 'n': 5}
+    # SHOULD BE: {'x': {'y': {'z': 3}, 'u': 10}, 'm': [1,2], 'n': 5}
+    assert C+D == {'x': [{'y': [{'1': 'Thing A', '3': 'Thing C'},
+        {'2': 'Thing B', '4': 'Thing D'},
+        {'3': 'Thing C'},
+        {'4': 'Thing D'}]},
+    {'y': [{'3': 'Thing C'}, {'4': 'Thing D'}]}]}
+    # SHOULD BE: {'x': {'y': [{'1': 'Thing A'}, {'2': 'Thing B'}, {'3': 'Thing C'}, {'4': 'Thing D'}]}}
+
+
+def test_dict_subtraction_1():
+    '''
+    testing Dict.__sub__
+    '''
+    pass

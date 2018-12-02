@@ -2,8 +2,6 @@
 
 `pip install --extra-index-url https://pypi.wefindx.io/ metaform`
 
-`$ harvest <resource>`
-
 ## Development
 Add `~/.pypirc` file:
 
