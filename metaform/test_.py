@@ -223,4 +223,21 @@ def test_dict_subtraction_1():
     '''
     testing Dict.__sub__
     '''
-    pass
+    a = Dict({'x': 1})
+    b = Dict({'x': 1})
+    c = Dict({'y': 1})
+    d = Dict({'y': [1]})
+    e = Dict({'z': {'?': 1}})
+    f = Dict({'z': {'?': [1]}})
+    g = Dict({'z': {'?': 1, '!': 1}, 'u': 1})
+
+    assert b - a == {}
+    assert a - b == {}
+    assert Dict({}) - f == {}
+    assert d - d == {'y': []}
+    assert e - e == {'z': {}}
+
+    assert g - e == {'z': {'!': 1}, 'u': 1}
+
+    assert e - f == {'z': {'?': 1}}
+    # SHOULD BE: {'z': {'?': []}}
