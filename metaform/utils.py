@@ -1,7 +1,6 @@
 import os
 import pathlib
 from boltons.iterutils import remap
-from slugify import slugify
 from functools import reduce
 import operator
 from tinydb import TinyDB, Query
@@ -10,6 +9,7 @@ from . import converters
 
 import metawiki
 import typology
+from typology.utils import slug
 from collections import defaultdict
 from copy import deepcopy
 
@@ -21,21 +21,6 @@ if not os.path.exists(conf_path):
 db = TinyDB(os.path.join(conf_path, 'db.json'))
 
 
-def slug(url, skip_valid=True):
-
-    if skip_valid:
-        if metawiki.isname(url):
-            return url
-
-    # exception
-    if url == '-':
-        return url
-
-    if '#' in url:
-        url, anchor = url.rsplit('#', 1)
-        return '{}#{}'.format(slugify(url), slugify(anchor))
-    else:
-        return slugify(url)
 
 def dictget(d, mapList):
     '''
