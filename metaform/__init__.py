@@ -15,7 +15,7 @@ from metaform.utils import (
 )
 
 # convenience alias #
-from metaform.schema_readers import get_schema #noqa
+from typology.utils import get_schema #noqa
 from metaform.utils import metaplate #noqa
 from metaform.utils import metaplate as template #noqa
 from metaform.utils import get_concept
