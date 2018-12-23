@@ -226,24 +226,25 @@ class Dict(dict):
         url = self.get('-')
         schema = get_schema(self['*'])
         concept = metawiki.url_to_name(self['*'])
-        service_name = concept.rsplit('#',1)[-1]
+        service_label = concept.rsplit('#',1)[-1]
         class_name = concept.rsplit('/',1)[-1].split('#',1)[0].title()
 
         if '_:emitter' in schema.keys():
-            if schema['_:emitter'].startswith('PyPI:metadrive.'):
+            if schema['_:emitter'].startswith('PyPI:'):
+                service_name = schema['_:emitter'].rsplit('.', 1)[-1]
 
-                # from metadrive.[service_name].[api] import class_name
+                # from [service_name].[api] import class_name
                 api = importlib.import_module(
-                    'metadrive.{service_name}.api'.format(
+                    '{service_name}.api'.format(
                         service_name=service_name))
 
                 # Map actions to interface.
                 Klass = getattr(api, class_name)
 
-                # # from metadrive.[service_name] import login
+                # # from [service_name] import login
                 if self.get('+'):
                     service = importlib.import_module(
-                        'metadrive.{service_name}'.format(
+                        '{service_name}'.format(
                             service_name=service_name))
 
                     login = getattr(service, 'login')
