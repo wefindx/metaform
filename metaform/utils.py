@@ -1,4 +1,5 @@
 import os
+import re
 import pathlib
 from boltons.iterutils import remap
 from functools import reduce

@@ -20,6 +20,7 @@ from metaform.utils import metaplate #noqa
 from metaform.utils import metaplate as template #noqa
 from metaform.utils import get_concept
 from metaform import converters
+from metadrive.utils import ensure_driver_installed
 import metawiki
 
 import pymongo
@@ -231,12 +232,18 @@ class Dict(dict):
 
         if '_:emitter' in schema.keys():
             if schema['_:emitter'].startswith('PyPI:'):
-                service_name = schema['_:emitter'].rsplit('.', 1)[-1]
 
-                # from [service_name].[api] import class_name
+                ensure_driver_installed(schema['_:emitter'])
+
+                service_name = schema['_:emitter'][5:].rsplit('.', 1)[-1]
+                module_name = schema['_:emitter'][5:].rsplit('.', 1)[0]
+
+
+
+                # from [module_name].[api] import class_name
                 api = importlib.import_module(
-                    '{service_name}.api'.format(
-                        service_name=service_name))
+                    '{module_name}.api'.format(
+                        module_name=module_name))
 
                 # Map actions to interface.
                 Klass = getattr(api, class_name)
@@ -244,8 +251,8 @@ class Dict(dict):
                 # # from [service_name] import login
                 if self.get('+'):
                     service = importlib.import_module(
-                        '{service_name}'.format(
-                            service_name=service_name))
+                        '{module_name}'.format(
+                            module_name=module_name))
 
                     login = getattr(service, 'login')
                     session = login()
