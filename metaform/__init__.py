@@ -16,8 +16,6 @@ from metaform.utils import (
 
 # convenience alias #
 from typology.utils import get_schema #noqa
-from metaform.utils import metaplate #noqa
-from metaform.utils import metaplate as template #noqa
 from metaform.utils import get_concept
 from metaform import converters
 from metadrive.utils import ensure_driver_installed
@@ -25,6 +23,10 @@ import metawiki
 
 import pymongo
 import requests, json
+
+from metaform.utils import metaplate as template #noqa
+def metaplate(data):
+    template(data, print_yaml=True)
 
 def convert(key, value, schema, slugify=False, storage=None):
     """

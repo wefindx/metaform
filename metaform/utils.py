@@ -1,9 +1,11 @@
 import os
 import re
+import yaml
 import pathlib
+import operator
+
 from boltons.iterutils import remap
 from functools import reduce
-import operator
 from tinydb import TinyDB, Query
 
 from . import converters
@@ -49,7 +51,7 @@ def metapath(path):
             metapath.append(item)
     return metapath
 
-def metaplate(data, with_self=True):
+def metaplate(data, with_self=True, print_yaml=False):
     '''
     Creates a meta-template for a dictionary-like data.
 
@@ -104,7 +106,10 @@ def metaplate(data, with_self=True):
     if '_#list#_' in remapped.keys():
         remapped = remapped['_#list#_']
 
-    return remapped
+    if print_yaml:
+        print(yaml.dump(remapped))
+    else:
+        return remapped
 
 
 def get_concept(value, refresh=False):
