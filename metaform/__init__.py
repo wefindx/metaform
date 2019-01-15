@@ -23,10 +23,18 @@ import metawiki
 
 import pymongo
 import requests, json
+import pprint
 
 from metaform.utils import metaplate as template #noqa
-def metaplate(data):
-    template(data, print_yaml=True)
+def metaplate(data, _format='json'):
+    if _format == 'yaml':
+        template(data, print_yaml=True)
+    if _format == 'dict':
+        pprint.pprint(template(data, print_yaml=False))
+    if _format == 'json':
+        print(
+            pprint.pformat(
+                template(data, print_yaml=False)).replace("'", '"'))
 
 def convert(key, value, schema, slugify=False, storage=None):
     """
