@@ -301,6 +301,12 @@ class List(list):
     def render(self, lang, schema=None, refresh=False):
         return translate([normalize(item, schema=schema) for item in self], lang=lang, refresh=refresh)
 
+    def normalize(self, refresh=False, by_record=0):
+        schema_name = self[by_record].get('*')
+        schema = get_schema(schema_name)
+        return [normalize(item, schema=schema) for item in self]
+
+
 def wrap(records: list, schema: dict):
     '''
     #records = [dict(row) for row in csv.DictReader(open('sample1.csv'))]

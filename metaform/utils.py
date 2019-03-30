@@ -11,7 +11,7 @@ from tinydb import TinyDB, Query
 from . import converters
 
 import metawiki
-import typology
+from typology import Concept
 from typology.utils import slug
 from collections import defaultdict
 from copy import deepcopy
@@ -129,7 +129,7 @@ def get_concept(value, refresh=False):
         if refresh or not result:
 
             try:
-                concept = typology.Concept(url).concept
+                concept = Concept(url).concept
                 result = {'slug': slg, 'concept': concept}
                 db.insert(result)
 
