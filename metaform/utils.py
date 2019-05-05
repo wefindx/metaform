@@ -13,16 +13,16 @@ from . import converters
 import metawiki
 from typology import Concept
 from typology.utils import slug
+from typology.utils import get_schema as t_get_schema #noqa
 from collections import defaultdict
 from copy import deepcopy
 
-conf_path = os.path.join( str(pathlib.Path.home()), '.ooio')
+conf_path = os.path.join( str(pathlib.Path.home()), '.metaform')
 
 if not os.path.exists(conf_path):
     os.makedirs(conf_path)
 
 db = TinyDB(os.path.join(conf_path, 'db.json'))
-
 
 
 def dictget(d, mapList):
@@ -112,21 +112,60 @@ def metaplate(data, with_self=True, print_yaml=False):
         return remapped
 
 
-def get_concept(value, refresh=False):
+def get_schema(path, refresh=False):
+
+    url = metawiki.name_to_url(str(path))
 
     if any(
-        [str(value).startswith(it) for it in
+        [str(url).startswith(it) for it in
          list(metawiki.NAMESPACES.keys()) + ['https://github.com', 'https://www.wikidata.org']]
     ):
 
-        Concept = Query()
+        Schemas = Query()
 
-        url = metawiki.name_to_url(str(value))
         slg = slug(url)
 
-        result = db.search(Concept.slug == slg)
+        result = db.search(Schemas.slug == slg)
 
-        if refresh or not result:
+        if not result or refresh:
+
+            if refresh:
+
+                try:
+                    db.remove(Schemas.slug == slg)
+                except:
+                    pass
+
+            try:
+                schema = t_get_schema(url)
+                result = {'slug': slg, 'schema': schema}
+                db.insert(result)
+
+                return schema
+
+            except:
+                print("-> Could not find schema: {}".format(url))
+
+        else:
+            return result[0]['schema']
+
+
+def get_concept(value, refresh=False):
+
+    url = metawiki.name_to_url(str(value))
+
+    if any(
+        [str(url).startswith(it) for it in
+         list(metawiki.NAMESPACES.keys()) + ['https://github.com', 'https://www.wikidata.org']]
+    ):
+
+        Concepts = Query()
+
+        slg = slug(url)
+
+        result = db.search(Concepts.slug == slg)
+
+        if not result or refresh:
 
             try:
                 concept = Concept(url).concept

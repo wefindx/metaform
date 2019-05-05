@@ -15,8 +15,7 @@ from metaform.utils import (
 )
 
 # convenience alias #
-from typology.utils import get_schema #noqa
-from metaform.utils import get_concept
+from metaform.utils import get_concept, get_schema
 from metaform import converters
 import metawiki
 
