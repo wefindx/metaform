@@ -22,7 +22,8 @@ conf_path = os.path.join( str(pathlib.Path.home()), '.metaform')
 if not os.path.exists(conf_path):
     os.makedirs(conf_path)
 
-db = TinyDB(os.path.join(conf_path, 'db.json'))
+concepts = TinyDB(os.path.join(conf_path, 'concepts.json'))
+schemas = TinyDB(os.path.join(conf_path, 'schemas.json'))
 
 
 def dictget(d, mapList):
@@ -125,21 +126,21 @@ def get_schema(path, refresh=False):
 
         slg = slug(url)
 
-        result = db.search(Schemas.slug == slg)
+        result = schemas.search(Schemas.slug == slg)
 
         if not result or refresh:
 
             if refresh:
 
                 try:
-                    db.remove(Schemas.slug == slg)
+                    schemas.remove(Schemas.slug == slg)
                 except:
                     pass
 
             try:
                 schema = t_get_schema(url)
                 result = {'slug': slg, 'schema': schema}
-                db.insert(result)
+                schemas.insert(result)
 
                 return schema
 
@@ -163,14 +164,14 @@ def get_concept(value, refresh=False):
 
         slg = slug(url)
 
-        result = db.search(Concepts.slug == slg)
+        result = concepts.search(Concepts.slug == slg)
 
         if not result or refresh:
 
             try:
                 concept = Concept(url).concept
                 result = {'slug': slg, 'concept': concept}
-                db.insert(result)
+                concepts.insert(result)
 
                 return concept
 
