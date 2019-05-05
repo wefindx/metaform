@@ -18,7 +18,6 @@ from metaform.utils import (
 from typology.utils import get_schema #noqa
 from metaform.utils import get_concept
 from metaform import converters
-from metadrive.utils import ensure_driver_installed
 import metawiki
 
 import requests, json
@@ -258,6 +257,7 @@ class Dict(dict):
         if '_:emitter' in schema.keys():
             if schema['_:emitter'].startswith('PyPI:'):
 
+                from metadrive.utils import ensure_driver_installed
                 ensure_driver_installed(schema['_:emitter'])
 
                 service_name = schema['_:emitter'][5:].rsplit('.', 1)[-1]
