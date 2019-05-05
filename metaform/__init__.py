@@ -21,20 +21,35 @@ from metaform import converters
 from metadrive.utils import ensure_driver_installed
 import metawiki
 
-import pymongo
 import requests, json
 import pprint
 
 from metaform.utils import metaplate as template #noqa
-def metaplate(data, _format='json'):
+
+def metaplate(data, _format='json', ret=False):
+    tpl = None
     if _format == 'yaml':
-        template(data, print_yaml=True)
+        if ret:
+            tpl = template(data, print_yaml=False)
+            return tpl
+        else:
+            template(data, print_yaml=True)
+
     if _format == 'dict':
-        pprint.pprint(template(data, print_yaml=False))
+        tpl = template(data, print_yaml=False)
+        if ret:
+            return tpl
+        else:
+            pprint.pprint(tpl)
+
     if _format == 'json':
-        print(
-            pprint.pformat(
-                template(data, print_yaml=False)).replace("'", '"'))
+        tpl = template(data, print_yaml=False)
+        if ret:
+            return tpl
+        else:
+            print(
+                pprint.pformat(
+                    tpl).replace("'", '"'))
 
 def convert(key, value, schema, slugify=False, storage=None):
     """
@@ -346,9 +361,6 @@ def load(data, schema=None):
                     # No schema
                     print('No schema found. Specify it in SCANME.md or provide schema parameter.')
                     return records
-
-    if isinstance(data, pymongo.cursor.Cursor):
-        data = list(data)
 
     if isinstance(data, list):
         records = data

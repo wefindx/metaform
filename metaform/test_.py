@@ -81,7 +81,7 @@ def test_make_and_apply_template():
         'b': 'something'
     }
 
-    template = metaplate(data)
+    template = metaplate(data, ret=True)
 
     answer = {
         '*': '',
@@ -130,7 +130,7 @@ def test_make_and_apply_complex_template():
      'model': 'core.topic',
      'pk': 1}
 
-    template = metaplate(data)
+    template = metaplate(data, ret=True)
 
     template['fields']['blockchain']['*'] = 'HELLO'
 
