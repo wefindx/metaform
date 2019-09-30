@@ -1,15 +1,11 @@
-#from boltons.timeutils import isoparse
-from urllib.parse import urlparse
-from decimal import Decimal
 from datetime import datetime
 
 from dateutil.parser import parse as dateparse
-from datetime import timezone
-
 
 # TODO: refactor exceptions
 
-def object(x):
+
+def object(x, silent=True):
     # return dict(x)
     try:
         return dict(x)
@@ -19,8 +15,9 @@ def object(x):
         else:
             raise e
 
+
 def integer(x, silent=True):
-    #return int(x)
+    # return int(x)
     try:
         return int(x)
     except Exception as e:
@@ -29,8 +26,9 @@ def integer(x, silent=True):
         else:
             raise e
 
+
 def decimal(x, silent=True):
-    #return float(x)
+    # return float(x)
     try:
         return float(x)
     except Exception as e:
@@ -38,9 +36,10 @@ def decimal(x, silent=True):
             return x
         else:
             raise e
+
 
 def rational(x, silent=True):
-    #return float(x)
+    # return float(x)
     try:
         return float(x)
     except Exception as e:
@@ -49,18 +48,9 @@ def rational(x, silent=True):
         else:
             raise e
 
-def float(x, silent=True):
-    #return decimal(x)
-    try:
-        return Decimal(x)
-    except Exception as e:
-        if silent:
-            return x
-        else:
-            raise e
 
 def float(x, silent=True):
-    #return float(x)
+    # return float(x)
     try:
         return float(x)
     except Exception as e:
@@ -68,6 +58,7 @@ def float(x, silent=True):
             return x
         else:
             raise e
+
 
 def string(x, silent=True):
     # return str(x)
@@ -79,6 +70,7 @@ def string(x, silent=True):
         else:
             raise e
 
+
 def isodate(x, silent=True):
     # return isoparse(x)
     try:
@@ -88,6 +80,7 @@ def isodate(x, silent=True):
             return x
         else:
             raise e
+
 
 def unixtime(x, silent=True):
     # return isoparse(x)
@@ -109,6 +102,7 @@ def unixtime(x, silent=True):
 #             return x
 #         else:
 #             raise e
+
 
 def imarkdown(x):
     return x

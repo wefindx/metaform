@@ -1,23 +1,19 @@
-import os
-import re
-import yaml
-import pathlib
 import operator
-
-from boltons.iterutils import remap
-from functools import reduce
-from tinydb import TinyDB, Query
-
-from . import converters
-
-import metawiki
-from typology import Concept
-from typology.utils import slug
-from typology.utils import get_schema as t_get_schema #noqa
+import os
+import pathlib
 from collections import defaultdict
 from copy import deepcopy
+from functools import reduce
 
-conf_path = os.path.join( str(pathlib.Path.home()), '.metaform')
+import metawiki
+import yaml
+from boltons.iterutils import remap
+from tinydb import Query, TinyDB
+from typology import Concept
+from typology.utils import get_schema as t_get_schema  # noqa
+from typology.utils import slug
+
+conf_path = os.path.join(str(pathlib.Path.home()), '.metaform')
 
 if not os.path.exists(conf_path):
     os.makedirs(conf_path)
@@ -36,6 +32,7 @@ def dictget(d, mapList):
     '''
     return reduce(operator.getitem, mapList, d)
 
+
 def metapath(path):
     '''
     Given:
@@ -51,6 +48,7 @@ def metapath(path):
         else:
             metapath.append(item)
     return metapath
+
 
 def metaplate(data, with_self=True, print_yaml=False):
     '''
@@ -103,7 +101,6 @@ def metaplate(data, with_self=True, print_yaml=False):
                 if remapped[0]:
                     remapped[0].update({'*': ''})
 
-
     if '_#list#_' in remapped.keys():
         remapped = remapped['_#list#_']
 
@@ -134,7 +131,7 @@ def get_schema(path, refresh=False):
 
                 try:
                     schemas.remove(Schemas.slug == slg)
-                except:
+                except BaseException:
                     pass
 
             try:
@@ -144,7 +141,7 @@ def get_schema(path, refresh=False):
 
                 return schema
 
-            except:
+            except BaseException:
                 print("-> Could not find schema: {}".format(url))
 
         else:
@@ -175,7 +172,7 @@ def get_concept(value, refresh=False):
 
                 return concept
 
-            except:
+            except BaseException:
                 print("-> Undefined concept: {}".format(url))
 
         elif result:
@@ -259,7 +256,7 @@ def match(dict_list, exclude=[dict, list]):
     for key in matches:
         results.update(
             {key: [dictget(source, matches[key][i])
-             for i, source in enumerate(dict_list)]})
+                   for i, source in enumerate(dict_list)]})
 
     return results
 
@@ -268,22 +265,23 @@ def getx(data, path, inany=False):
     if not inany:
         try:
             return dictget(data, path)
-        except:
+        except BaseException:
             return None
     else:
         oneup = dictget(data, path[:-1])
         if isinstance(oneup, list):
-            possible_paths = [path[:-1]+(i,)+path[-1:] for i in range(len(oneup))]
+            possible_paths = [path[:-1] + (i,) + path[-1:] for i in range(len(oneup))]
             for p in possible_paths:
                 try:
                     item = dictget(data, p)
                     break
-                except:
+                except BaseException:
                     item = None
             if item is not None:
                 return p, item
             else:
                 return None
+
 
 def setx(data, path, value, other):
     '''
@@ -299,8 +297,8 @@ def setx(data, path, value, other):
         if (isinstance(r, dict) and (p not in r.keys())) or \
            (isinstance(r, list) and (p not in range(len(r)))):
             try:
-                other_type = type(getx(other, i)) # [], {}
-            except:
+                other_type = type(getx(other, i))  # [], {}
+            except BaseException:
                 other_type = dict
 
             if isinstance(r, dict):
@@ -314,20 +312,22 @@ def setx(data, path, value, other):
 
     try:
         r[path[-1]] = value
-    except:
+    except BaseException:
         # do nothing #
         pass
 
     return data
 
+
 def _add(a, b):
     a = deepcopy(a)
+
     def visit(path, key, value):
         fpath = path + (key,)
         val = getx(a, fpath)
 
         if val is not None:
-            if type(val) != type(value):
+            if not isinstance(val, type(value)):
                 new_val = [val, value]
             else:
                 # If upper element is concatable, don't add item values per se.
@@ -349,7 +349,7 @@ def _add(a, b):
 
         return key, value
 
-    sink = remap(b, visit=visit)
+    remap(b, visit=visit)
     return a
 
 
@@ -380,6 +380,7 @@ def _sub(a, b):
     '''
     a = deepcopy(a)
     a['___previous_was_list___'] = False
+
     def visit(path, key, value):
         fpath = path + (key,)
         vala = getx(a, fpath)
@@ -391,7 +392,7 @@ def _sub(a, b):
             valA = None
 
         if vala is not None:
-            if type(vala) != type(valb):
+            if not isinstance(vala, type(valb)):
                 if not isinstance(vala, list):
                     vala = [vala]
                 if not isinstance(valb, list):
@@ -402,7 +403,7 @@ def _sub(a, b):
                 if not a['___previous_was_list___']:
                     setx(a, fpath, new_val, b)
                 a['___previous_was_list___'] = False
-                #print('>>', a, (vala, valb))
+                # print('>>', a, (vala, valb))
             elif hasattr(vala, '__sub__'):
                 new_val = vala - valb
                 if not a['___previous_was_list___']:
@@ -413,16 +414,14 @@ def _sub(a, b):
 
         else:
             if valA is not None:
-                #print(valA)
+                # print(valA)
                 npath, _ = valA
-                #print('->', a)
+                # print('->', a)
                 delx(a, npath[:-1])
-                #print('-<', a)
+                # print('-<', a)
                 a['___previous_was_list___'] = True
-
-
         return key, value
 
-    sink = remap(b, visit=visit)
+    remap(b, visit=visit)
     del a['___previous_was_list___']
     return a

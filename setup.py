@@ -17,7 +17,7 @@ setup(
     author='Mindey',
     author_email='mindey@qq.com',
     license='ASK FOR PERMISSIONS',
-    packages = find_packages(exclude=['docs', 'tests*']),
+    packages=find_packages(exclude=['docs', 'tests*']),
     install_requires=[
         "metawiki",
         "typology",
@@ -25,8 +25,13 @@ setup(
         "tinydb",
         "python-dateutil",
     ],
-    extras_require = {
-        'test': ['coverage', 'pytest', 'pytest-cov'],
+    extras_require={
+        'develop': [
+            'pre-commit==1.18.3',
+            'coverage==4.5.4',
+            'flake8==3.7.8',
+            'isort==4.3.21',
+        ],
     },
     zip_safe=False
 )
