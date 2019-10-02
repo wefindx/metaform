@@ -1,28 +1,17 @@
 import importlib
-
+import json
 import os
-import re
-
-from boltons.iterutils import remap
-
-from metaform.utils import (
-    dictget,
-    metapath,
-    slug,
-    get_match_matrix,
-    _add,
-    _sub
-)
-
-# convenience alias #
-from metaform.utils import get_concept, get_schema
-from metaform import converters
-import metawiki
-
-import requests, json
 import pprint
 
-from metaform.utils import metaplate as template #noqa
+import metawiki
+import requests
+from boltons.iterutils import remap
+from metaform import converters
+# convenience alias #
+from metaform.utils import _add, _sub, dictget, get_concept, get_match_matrix, get_schema, metapath
+from metaform.utils import metaplate as template  # noqa
+from metaform.utils import slug
+
 
 def metaplate(data, _format='json', ret=False):
     tpl = None
@@ -48,6 +37,7 @@ def metaplate(data, _format='json', ret=False):
             print(
                 pprint.pformat(
                     tpl).replace("'", '"'))
+
 
 def convert(key, value, schema, slugify=False, storage=None):
     """
@@ -78,7 +68,7 @@ def convert(key, value, schema, slugify=False, storage=None):
     if schema:
 
         if '|' not in schema:
-            schema+='|'
+            schema += '|'
 
         term, rules = schema.split('|')
 
@@ -90,7 +80,7 @@ def convert(key, value, schema, slugify=False, storage=None):
                 if storage:
                     try:
                         storage['types']['_terms'].insert(record)
-                    except:
+                    except BaseException:
                         # Probaby, already exists.
                         pass
                 term = record['name']
@@ -108,6 +98,7 @@ def convert(key, value, schema, slugify=False, storage=None):
             key = term
 
     return key, value
+
 
 def normalize(data, schema=None, slugify=True, storage=None):
     '''
@@ -147,12 +138,13 @@ def normalize(data, schema=None, slugify=True, storage=None):
             if isinstance(meta, list):
                 meta = meta[0]
             return convert(key, value, meta, slugify=slugify, storage=storage)
-        except:
+        except BaseException:
             return key, value
 
     remapped = remap(data, visit=visit)
 
     return remapped
+
 
 def translate(ndata, lang=None, refresh=False):
     '''
@@ -180,6 +172,7 @@ def translate(ndata, lang=None, refresh=False):
 
     else:
         return ndata
+
 
 def formatize(ndata, ignore=[], no_convert=[]):
     '''
@@ -250,8 +243,8 @@ class Dict(dict):
         url = self.get('-')
         schema = get_schema(self['*'])
         concept = metawiki.url_to_name(self['*'])
-        service_label = concept.rsplit('#',1)[-1]
-        class_name = concept.rsplit('/',1)[-1].split('#',1)[0].title()
+        # service_label = concept.rsplit('#', 1)[-1]
+        class_name = concept.rsplit('/', 1)[-1].split('#', 1)[0].title()
 
         if '_:emitter' in schema.keys():
             if schema['_:emitter'].startswith('PyPI:'):
@@ -259,10 +252,8 @@ class Dict(dict):
                 from metadrive.utils import ensure_driver_installed
                 ensure_driver_installed(schema['_:emitter'])
 
-                service_name = schema['_:emitter'][5:].rsplit('.', 1)[-1]
+                # service_name = schema['_:emitter'][5:].rsplit('.', 1)[-1]
                 module_name = schema['_:emitter'][5:].rsplit('.', 1)[0]
-
-
 
                 # from [module_name].[api] import class_name
                 api = importlib.import_module(
@@ -308,7 +299,8 @@ class List(list):
             schema = None
 
         if lang:
-            return translate(formatize([normalize(item, schema=schema) for item in self], no_convert=['url']), lang=lang, refresh=refresh)
+            return translate(formatize([normalize(item, schema=schema)
+                                        for item in self], no_convert=['url']), lang=lang, refresh=refresh)
 
         return formatize([normalize(item, schema=schema) for item in self])
 
@@ -328,6 +320,7 @@ def wrap(records: list, schema: dict):
     '''
     return List([Dict(record) for record in normalize(records, [schema])])
 
+
 def load(data, schema=None):
     '''
     Reads data source, where each record has '*' attribute.
@@ -338,13 +331,13 @@ def load(data, schema=None):
 
     if isinstance(data, str):
         if data.endswith('.csv'):
-            filename = data.rsplit('/',1)[-1]
+            filename = data.rsplit('/', 1)[-1]
             import csv
             records = [dict(row) for row in csv.DictReader(open(data))]
             if 'SCANME.md' in os.listdir('.'):
                 import yaml
                 if not schema:
-                    scanme = yaml.load(open('SCANME.md').read().split('```yaml\n',1)[-1].split('\n```',1)[0])
+                    scanme = yaml.load(open('SCANME.md').read().split('```yaml\n', 1)[-1].split('\n```', 1)[0])
                     schema = get_schema(scanme.get(filename).get('*'))
 
                 if schema:
@@ -376,6 +369,7 @@ def load(data, schema=None):
         ndata = Dict(records)
 
     return ndata
+
 
 def dump():
     pass
