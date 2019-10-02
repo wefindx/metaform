@@ -1,11 +1,12 @@
 import datetime
+import json
 import unittest
 from copy import deepcopy
 
-from metaform import Dict, convert, formatize, metaplate, normalize
+from metaform import Dict, align, convert, converters, formatize, metaplate, normalize, template
 
 
-class TestCase(unittest.TestCase):
+class TestMain(unittest.TestCase):
 
     def setUp(self):
         self.key = 'something'
@@ -105,7 +106,7 @@ class TestCase(unittest.TestCase):
             'b': 'something'
         }
 
-        template = metaplate(data, ret=True)
+        tpl = metaplate(data, ret=True)
 
         answer = {
             '*': '',
@@ -118,13 +119,13 @@ class TestCase(unittest.TestCase):
             'b': {'*': ''}
         }
 
-        self.assertEqual(template, answer)
+        self.assertEqual(tpl, answer)
 
         # apply:
 
-        template['a'][0]['b']['*'] = 'hello'
+        tpl['a'][0]['b']['*'] = 'hello'
 
-        result = normalize(data, template)
+        result = normalize(data, tpl)
 
         answer = deepcopy(data)
 
@@ -157,11 +158,11 @@ class TestCase(unittest.TestCase):
             'pk': 1
         }
 
-        template = metaplate(data, ret=True)
+        tpl = metaplate(data, ret=True)
 
-        template['fields']['blockchain']['*'] = 'HELLO'
+        tpl['fields']['blockchain']['*'] = 'HELLO'
 
-        ndata = normalize(data, template)
+        ndata = normalize(data, tpl)
 
         answer = deepcopy(data)
         del answer['fields']['blockchain']
@@ -277,6 +278,156 @@ class TestCase(unittest.TestCase):
 
         self.assertEqual(e - f, {'z': {'?': 1}})
         # SHOULD BE: {'z': {'?': []}}
+
+
+class TestCore(unittest.TestCase):
+
+    def setUp(self):
+        self.data = {
+            'hello': 1.0,
+            'world': 2,
+            'how': ['is', {'are': {'you': 'doing'}}]
+        }
+        with open('metaform/tests/data/topics.json', 'r') as f:
+            self.topics = json.load(f)
+        with open('metaform/tests/data/comments.json', 'r') as f:
+            self.comments = json.load(f)
+
+    def test_generate_template(self):
+        expect = {
+            '*': '',
+            'hello': {'*': ''},
+            'how': [{'*': '', 'are': {'you': {'*': ''}}}],
+            'world': {'*': ''}
+        }
+        self.assertEqual(template(self.data), expect)
+
+    def test_rename_keys(self):
+        schema = {
+            '*': 'greeting',
+            'hello': {'*': 'length'},
+            'world': {'*': 'atoms'},
+            'how': [
+                 {
+                     '*': 'method',
+                     'are': {
+                         '*': 'yup',
+                         'you': {'*': 'me'}}
+                 }
+            ]}
+
+        expect = {'atoms': 2,
+                  'length': 1.0,
+                  'method': ['is', {'yup': {'me': 'doing'}}]}
+
+        self.assertEqual(normalize(self.data, schema), expect)
+
+    def test_apply_lambdas(self):
+        schema = {
+            '*': 'greeting',
+            'hello': {'*': 'length|lambda x: x+5.'},
+            'world': {'*': 'atoms|lambda x: str(x)+"ABC"'},
+            'how': [
+                 {
+                     '*': 'method',
+                     'are': {
+                         '*': 'yup',
+                         'you': {'*': 'me|lambda x: "-".join(list(x))'}
+                     }
+                 }
+            ]}
+
+        expect = {
+            'atoms': '2ABC',
+            'length': 6.0,
+            'method': ['is', {'yup': {'me': 'd-o-i-n-g'}}]}
+
+        self.assertEqual(normalize(self.data, schema), expect)
+
+    def test_custom_converters(self):
+
+        def some_func(x):
+            a = 123
+            b = 345
+            return (b - a) * x
+
+        converters.func = some_func
+
+        schema = {
+            '*': 'greeting',
+            'hello': {'*': 'length|converters.func'},
+            'world': {'*': 'atoms|lambda x: str(x)+"ABC"'},
+            'how': [
+                {
+                 '*': 'method',
+                 'are': {
+                     '*': 'yup',
+                     'you': {'*': 'me|lambda x: "-".join(list(x))'}}
+                }
+            ]}
+
+        expect = {
+            'atoms': '2ABC',
+            'length': 222.0,
+            'method': ['is', {'yup': {'me': 'd-o-i-n-g'}}]}
+
+        self.assertEqual(normalize(self.data, schema), expect)
+
+    def test_merging_topics_and_comments(self):
+        topics_schema = [{
+            'id': {'*': 'topic-id'},
+            'type': {'*': '|lambda x: {0: "NEED", 1: "GOAL", 2: "IDEA", 3: "PLAN", 4: "STEP", 5: "TASK"}.get(x)'},
+            'owner': {'username': {'*': ''}, 'id': {'*': 'user-id'}},
+            'blockchain': {'*': '|lambda x: x and True or False'},
+        }]
+
+        comments_schema = [{
+            'id': {'*': 'comment-id'},
+            'topic': {'*': 'topic-url'},
+            'text': {'*': 'body'},
+            'owner': {'username': {'*': ''}, 'id': {'*': 'user-id'}},
+            'blockchain': {'*': '|lambda x: x and True or False'},
+        }]
+
+        normal_topics = normalize(self.topics, topics_schema)
+        normal_comments = normalize(self.comments, comments_schema)
+
+        with open('metaform/tests/data/topics+comments.json', 'r') as f:
+            expect = json.load(f)
+
+        self.assertEqual(normal_topics + normal_comments, expect)
+
+    def test_keys_pickout_alignment(self):
+        topics_schema = [{
+            'id': {'*': 'topic-id'},
+            'type': {'*': '|lambda x: {0: "NEED", 1: "GOAL", 2: "IDEA", 3: "PLAN", 4: "STEP", 5: "TASK"}.get(x)'},
+            'owner': {'username': {'*': ''}, 'id': {'*': 'user-id'}},
+            'blockchain': {'*': '|lambda x: x and True or False'},
+        }]
+        comments_schema = [{
+            'id': {'*': 'comment-id'},
+            'topic': {'*': 'topic-url'},
+            'text': {'*': 'body'},
+            'owner': {'username': {'*': ''}, 'id': {'*': 'user-id'}},
+            'blockchain': {'*': '|lambda x: x and True or False'},
+        }]
+
+        normal_topics = normalize(self.topics, topics_schema)
+        normal_comments = normalize(self.comments, comments_schema)
+
+        abnormal_comments = [
+            dict(comment, **{"some": {"place": {"deep": comment["owner"]}}, "owner": None})
+            for comment in normal_comments
+        ]
+
+        with open('metaform/tests/data/topics+comments-pickout.json', 'r') as f:
+            expect = json.load(f)
+
+        self.assertEqual(
+            json.loads(json.dumps(list(
+                align([normal_topics[:1], abnormal_comments[:1]])
+            ))), expect
+        )
 
 
 if __name__ == '__main__':
