@@ -63,6 +63,8 @@ metaform.normalize(data, schema)
     {'atoms': 2, 'length': 1.0, 'method': ['is', {'yup': {'me': 'doing'}}]}
 
 
+We recommend saving schemas you create for normalizations for data analytics and [driver projects](https://github.com/drivernet) in dot-folders `.schema`,  in a JSON or YAML files in that folder.
+
 
 So, we have access to all keys, and can specify, what to do with them:
 
