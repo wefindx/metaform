@@ -1,0 +1,6 @@
+{
+    "plugins": ["katex", "-sharing"],
+    "styles": {
+        "website": "styles/website.css"
+    }
+}
