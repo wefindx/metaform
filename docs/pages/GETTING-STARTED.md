@@ -13,7 +13,7 @@ data = metaform.requests.get('https://www.metaculus.com/api2/questions/').json()
 
 metaform.template(data)
 ```
-Produced template:
+Produces template:
 ```json
 {'count': {'*': ''},
  'results': [{'url': {'*': ''},

@@ -3,16 +3,15 @@
 
 from setuptools import find_packages, setup
 
-with open('README.md', 'r') as f:
+with open('README.rst', 'r') as f:
     long_description = f.read()
 
 
 setup(
     name='metaform',
-    version='1.0.0',
+    version='1.0.1.1',
     description='A utility for defining metadata for data types and formats.',
     long_description=long_description,
-    long_description_content_type='text/markdown',
     url='https://gitlab.com/wefindx/metaform',
     author='Mindey',
     author_email='mindey@qq.com',
