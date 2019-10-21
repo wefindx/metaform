@@ -1,6 +1,6 @@
-# metaform
+# Use Walkthrough
 
-Metaform is a package for hierarchical and nested data normalization.
+**Install and import the package.**
 
 ```pip install metaform```
 
@@ -28,18 +28,12 @@ We can get the template for defining schema, by `metaform.template`:
 metaform.template(data)
 ```
 
-
-
-
-    {'*': '',
-     'hello': {'*': ''},
-     'how': [{'*': '', 'are': {'you': {'*': ''}}}],
-     'world': {'*': ''}}
-
-
+  {'*': '',
+    'hello': {'*': ''},
+    'how': [{'*': '', 'are': {'you': {'*': ''}}}],
+    'world': {'*': ''}}
 
 This provides an opportunity to specify metadata for each key and the object itself. For example:
-
 
 ```python
 schema = {
@@ -57,14 +51,9 @@ schema = {
 metaform.normalize(data, schema)
 ```
 
-
-
-
-    {'atoms': 2, 'length': 1.0, 'method': ['is', {'yup': {'me': 'doing'}}]}
-
+  {'atoms': 2, 'length': 1.0, 'method': ['is', {'yup': {'me': 'doing'}}]}
 
 We recommend saving schemas you create for normalizations for data analytics and [driver projects](https://github.com/drivernet) in dot-folders `.schema`,  in a JSON or YAML files in that folder.
-
 
 So, we have access to all keys, and can specify, what to do with them:
 
@@ -85,17 +74,12 @@ schema = {
 metaform.normalize(data, schema)
 ```
 
-
-
-
-    {'atoms': '2ABC',
-     'length': 6.0,
-     'method': ['is', {'yup': {'me': 'd-o-i-n-g'}}]}
-
+  {'atoms': '2ABC',
+    'length': 6.0,
+    'method': ['is', {'yup': {'me': 'd-o-i-n-g'}}]}
 
 
 And suppose, we want to define a more complex function, inconvenient via lambdas:
-
 
 ```python
 from metaform import converters
@@ -122,12 +106,9 @@ schema = {
 metaform.normalize(data, schema)
 ```
 
-
-
-
-    {'atoms': '2ABC',
-     'length': 222.0,
-     'method': ['is', {'yup': {'me': 'd-o-i-n-g'}}]}
+  {'atoms': '2ABC',
+    'length': 222.0,
+    'method': ['is', {'yup': {'me': 'd-o-i-n-g'}}]}
 
 
 
@@ -160,35 +141,29 @@ topics_df = pandas.io.json.json_normalize(normal_topics)
 topics_df.dtypes
 ```
 
-
-
-
-    blockchain             bool
-    body                 object
-    categories           object
-    categories_names     object
-    children             object
-    comment_count         int64
-    created_date         object
-    data                 object
-    declared            float64
-    editors              object
-    funds               float64
-    is_draft               bool
-    languages            object
-    matched             float64
-    owner.user-id         int64
-    owner.username       object
-    parents              object
-    title                object
-    topic-id              int64
-    type                 object
-    updated_date         object
-    url                  object
-    dtype: object
-
-
-
+  blockchain             bool
+  body                 object
+  categories           object
+  categories_names     object
+  children             object
+  comment_count         int64
+  created_date         object
+  data                 object
+  declared            float64
+  editors              object
+  funds               float64
+  is_draft               bool
+  languages            object
+  matched             float64
+  owner.user-id         int64
+  owner.username       object
+  parents              object
+  title                object
+  topic-id              int64
+  type                 object
+  updated_date         object
+  url                  object
+  dtype: object
 
 ```python
 comments_schema = [{
@@ -205,37 +180,28 @@ comments_df = pandas.io.json.json_normalize(normal_comments)
 comments_df.dtypes
 ```
 
-
-
-
-    assumed_hours      object
-    blockchain           bool
-    body               object
-    claimed_hours      object
-    comment-id          int64
-    created_date       object
-    donated           float64
-    languages          object
-    matched           float64
-    owner.user-id       int64
-    owner.username     object
-    parent             object
-    remains           float64
-    topic-url          object
-    updated_date       object
-    url                object
-    dtype: object
-
-
-
+  assumed_hours      object
+  blockchain           bool
+  body               object
+  claimed_hours      object
+  comment-id          int64
+  created_date       object
+  donated           float64
+  languages          object
+  matched           float64
+  owner.user-id       int64
+  owner.username     object
+  parent             object
+  remains           float64
+  topic-url          object
+  updated_date       object
+  url                object
+  dtype: object
 
 ```python
 df = pandas.concat([topics_df, comments_df], sort=False)
 df.head()
 ```
-
-
-
 
 <div>
 <table border="1" class="dataframe">
@@ -391,8 +357,6 @@ df.head()
 <p>5 rows × 29 columns</p>
 </div>
 
-
-
 But that leaves us with a potential alignment problem, if the keys representing the same things appear at different hierarchical places in different sources.
 
 ## Aligning Data
@@ -401,87 +365,57 @@ So suppose we want to pick out the matching keys at different levels of hierarch
 
 Just for the sake of complexity, let's put the user references deeper somewhere in one of the sources, and remove original:
 
-
 ```python
 abnormal_comments = [dict(comment,**{"some": {"place": {"deep": comment["owner"]}}, "owner": None}) for comment in normal_comments]
 ```
-
 
 ```python
 abnormal_comments[0]
 ```
 
-
-
-
-    {'assumed_hours': '0.00000000',
-     'blockchain': True,
-     'body': '.:en\n[https://wiki.mindey.com/shared/shots/b51de15b96a58b76fbeb3a1ef.png](https://wiki.mindey.com/shared/shots/b51de15b96a58b76fbeb3a1ef.png)\n{0.15}',
-     'claimed_hours': '0.15000000',
-     'comment-id': 791,
-     'created_date': '2019-09-21T10:05:34.228102',
-     'donated': 0.0,
-     'languages': ['en'],
-     'matched': 0.15,
-     'owner': None,
-     'parent': None,
-     'remains': 0.0,
-     'some': {'place': {'deep': {'user-id': 147, 'username': 'Mindey@FE706DAF'}}},
-     'topic-url': 'https://api.infty.xyz/topics/894/?format=json',
-     'updated_date': '2019-09-21T10:05:54.924341',
-     'url': 'https://api.infty.xyz/comments/791/?format=json'}
-
-
+  {'assumed_hours': '0.00000000',
+    'blockchain': True,
+    'body': '.:en\n[https://wiki.mindey.com/shared/shots/b51de15b96a58b76fbeb3a1ef.png](https://wiki.mindey.com/shared/shots/b51de15b96a58b76fbeb3a1ef.png)\n{0.15}',
+    'claimed_hours': '0.15000000',
+    'comment-id': 791,
+    'created_date': '2019-09-21T10:05:34.228102',
+    'donated': 0.0,
+    'languages': ['en'],
+    'matched': 0.15,
+    'owner': None,
+    'parent': None,
+    'remains': 0.0,
+    'some': {'place': {'deep': {'user-id': 147, 'username': 'Mindey@FE706DAF'}}},
+    'topic-url': 'https://api.infty.xyz/topics/894/?format=json',
+    'updated_date': '2019-09-21T10:05:54.924341',
+    'url': 'https://api.infty.xyz/comments/791/?format=json'}
 
 
 ```python
 metaform.align([normal_topics[:1], abnormal_comments[:1]])
 ```
 
-
-
-
     <generator object align at 0x7f5207473d58>
-
-
-
 
 ```python
 list(_)
 ```
 
-
-
-
-    [{0: 'en',
-      'blockchain': True,
-      'body': '.:en\nAdd the **trade.Exchange** model, to enable atomic exchange of assets between identities, identities being **users.User**, and assets being things registered as **meta.Instances**, which may be created at the time of operation, if necessary to identify some divisible quantity, like liters of water, or amounts of money .\n\nEach **Exchange** would involve equivalent exchange of hour-money.\n\nSo, an **Exchange** would credit one account, and debit another account.',
-      'created_date': '2019-09-21T09:15:48.194279',
-      'matched': 0.15,
-      'updated_date': '2019-09-21T09:34:00.686125',
-      'url': 'https://api.infty.xyz/topics/894/?format=json',
-      'user-id': 147,
-      'username': 'Mindey@FE706DAF'},
-     {0: 'en',
-      'blockchain': True,
-      'body': '.:en\n[https://wiki.mindey.com/shared/shots/b51de15b96a58b76fbeb3a1ef.png](https://wiki.mindey.com/shared/shots/b51de15b96a58b76fbeb3a1ef.png)\n{0.15}',
-      'created_date': '2019-09-21T10:05:34.228102',
-      'matched': 0.15,
-      'updated_date': '2019-09-21T10:05:54.924341',
-      'url': 'https://api.infty.xyz/comments/791/?format=json',
-      'user-id': 147,
-      'username': 'Mindey@FE706DAF'}]
-
-
-
-## Challenges:
-
-### Recognize and rename fields to concept references automatically.
-
-1. Create a large number of these normalization templates for a lot of data sources.
-2. Machine-learn the **field-names**, and **corresponding concepts**, so that the data gets normalized automatically, and ready for analysts.
-3. Result:
-    - we shall have a universal data normalizer, which given any data, is able to automatically:
-        - assign proper fields and value types to it.
-        - identify their position in the nested hierarchies
-        - understand their ontological meaning in contexts of their positions
+  [{0: 'en',
+    'blockchain': True,
+    'body': '.:en\nAdd the **trade.Exchange** model, to enable atomic exchange of assets between identities, identities being **users.User**, and assets being things registered as **meta.Instances**, which may be created at the time of operation, if necessary to identify some divisible quantity, like liters of water, or amounts of money .\n\nEach **Exchange** would involve equivalent exchange of hour-money.\n\nSo, an **Exchange** would credit one account, and debit another account.',
+    'created_date': '2019-09-21T09:15:48.194279',
+    'matched': 0.15,
+    'updated_date': '2019-09-21T09:34:00.686125',
+    'url': 'https://api.infty.xyz/topics/894/?format=json',
+    'user-id': 147,
+    'username': 'Mindey@FE706DAF'},
+    {0: 'en',
+    'blockchain': True,
+    'body': '.:en\n[https://wiki.mindey.com/shared/shots/b51de15b96a58b76fbeb3a1ef.png](https://wiki.mindey.com/shared/shots/b51de15b96a58b76fbeb3a1ef.png)\n{0.15}',
+    'created_date': '2019-09-21T10:05:34.228102',
+    'matched': 0.15,
+    'updated_date': '2019-09-21T10:05:54.924341',
+    'url': 'https://api.infty.xyz/comments/791/?format=json',
+    'user-id': 147,
+    'username': 'Mindey@FE706DAF'}]
