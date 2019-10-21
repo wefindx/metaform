@@ -1,6 +1,12 @@
 metaform
 ========
 
+.. image:: https://badge.fury.io/py/metaform.svg
+    :target: https://badge.fury.io/py/metaform
+.. image:: https://badges.gitter.im/djrobstep/csvx.svg
+   :alt: Join the chat at https://gitter.im/wefindx/metaform
+   :target: https://gitter.im/wefindx/metaform
+
 Metaform is a package for hierarchical and nested data normalization.
 
 ``pip install metaform``
@@ -215,4 +221,3 @@ Let’s define templates for them, with the key names and types to match:
 .. code:: python
 
    df = pandas.concat([topics_df, comments_df], sort=False)
-
