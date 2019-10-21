@@ -100,7 +100,7 @@ def convert(key, value, schema, slugify=False, storage=None):
     return key, value
 
 
-def normalize(data, schema=None, slugify=True, storage=None):
+def normalize(data, schema=None, slugify=False, storage=None):
     '''
     Combine data with schema and types in schema by zipping tree.
 

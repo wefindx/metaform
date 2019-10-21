@@ -93,7 +93,7 @@ class TestMain(unittest.TestCase):
             }
         ]
 
-        self.assertEqual(normalize(data, schema), result)
+        self.assertEqual(normalize(data, schema, slugify=True), result)
 
     def test_make_and_apply_template(self):
 
@@ -162,7 +162,7 @@ class TestMain(unittest.TestCase):
 
         tpl['fields']['blockchain']['*'] = 'HELLO'
 
-        ndata = normalize(data, tpl)
+        ndata = normalize(data, tpl, slugify=True)
 
         answer = deepcopy(data)
         del answer['fields']['blockchain']
@@ -427,6 +427,30 @@ class TestCore(unittest.TestCase):
             json.loads(json.dumps(list(
                 align([normal_topics[:1], abnormal_comments[:1]])
             ))), expect
+        )
+
+    def test_keys_renaming(self):
+        self.assertEqual(
+            normalize({'A': 1}, {'A': {'*': 'B'}}),
+            {'B': 1}
+        )
+
+    def test_hyphenation(self):
+        self.assertEqual(
+            normalize({'A': 1}, {'A': {'*': 'a_b'}}),
+            {'a_b': 1}
+        )
+
+    def test_keys_renaming_slugify(self):
+        self.assertEqual(
+            normalize({'A': 1}, {'A': {'*': 'B'}}, slugify=True),
+            {'b': 1}
+        )
+
+    def test_hyphenation_slugify(self):
+        self.assertEqual(
+            normalize({'A': 1}, {'A': {'*': 'a_b'}}, slugify=True),
+            {'a-b': 1}
         )
 
 
