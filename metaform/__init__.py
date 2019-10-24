@@ -12,6 +12,8 @@ from metaform.utils import _add, _sub, dictget, get_concept, get_match_matrix, g
 from metaform.utils import metaplate as template  # noqa
 from metaform.utils import slug
 
+to = converters
+
 
 def metaplate(data, _format='json', ret=False):
     tpl = None
