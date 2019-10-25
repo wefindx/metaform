@@ -9,14 +9,17 @@ metaform
 
 Metaform is a package for hierarchical and nested data normalization.
 
+.. image:: https://wiki.mindey.com/shared/shots/53dcf81b7efd0573f07c5f562.png
+   :target: https://wiki.mindey.com/shared/shots/56542f97f99a2b3886baa661f-what-is-metaform.mp4
+
+Basic Usage
+-----------
+
 ``pip install metaform``
 
 .. code:: python
 
    import metaform
-
-Basic Usage
------------
 
 Let’s say we have some data:
 
