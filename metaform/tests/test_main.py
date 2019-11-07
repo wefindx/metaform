@@ -47,9 +47,9 @@ class TestMain(unittest.TestCase):
         schema = [
             {
                 '_version': 'domain.com/parents-0.1',
-                '*': 'https://www.wikidata.org/wiki/Q7565',
+                '*': 'https://github.com/infamily/_/wiki/address',
                 'address': {
-                    '*': 'https://www.wikidata.org/wiki/Q319608',
+                    '*': 'https://github.com/infamily/_/wiki/address',
                     'number': {'*': 'https://www.wikidata.org/wiki/Q1413235|lambda _: int(_)'},
                     'street': {'*': 'https://www.wikidata.org/wiki/Q24574749'}
                 },
@@ -66,7 +66,7 @@ class TestMain(unittest.TestCase):
 
         result = [
             {
-                'WD:Q319608': {
+                'GH:infamily/_/address': {
                     'WD:Q1413235': 14,
                     'WD:Q24574749': 'Leonardo str.'
                 },
@@ -79,7 +79,7 @@ class TestMain(unittest.TestCase):
                 'WD:Q82799': 'Max'
             },
             {
-                'WD:Q319608': {
+                'GH:infamily/_/address': {
                     'WD:Q1413235': 1,
                     'WD:Q24574749': 'Nexus str.'
                 },
