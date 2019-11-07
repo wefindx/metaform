@@ -47,9 +47,9 @@ class TestMain(unittest.TestCase):
         schema = [
             {
                 '_version': 'domain.com/parents-0.1',
-                '*': 'https://www.wikidata.org/wiki/Q7565',
+                '*': 'https://github.com/infamily/_/wiki/address',
                 'address': {
-                    '*': 'https://www.wikidata.org/wiki/Q319608',
+                    '*': 'https://github.com/infamily/_/wiki/address',
                     'number': {'*': 'https://www.wikidata.org/wiki/Q1413235|lambda _: int(_)'},
                     'street': {'*': 'https://www.wikidata.org/wiki/Q24574749'}
                 },
@@ -66,34 +66,34 @@ class TestMain(unittest.TestCase):
 
         result = [
             {
-                'https-www-wikidata-org-wiki-q319608': {
-                    'https-www-wikidata-org-wiki-q1413235': 14,
-                    'https-www-wikidata-org-wiki-q24574749': 'Leonardo str.'
+                'GH:infamily/_/address': {
+                    'WD:Q1413235': 14,
+                    'WD:Q24574749': 'Leonardo str.'
                 },
-                'https-www-wikidata-org-wiki-q7569': [
-                    {'https-www-wikidata-org-wiki-q185836': 1.0,
-                        'https-www-wikidata-org-wiki-q82799': 'Mike'},
-                    {'https-www-wikidata-org-wiki-q185836': 15.0,
-                        'https-www-wikidata-org-wiki-q82799': 'Tom'}
+                'WD:Q7569': [
+                    {'WD:Q185836': 1.0,
+                        'WD:Q82799': 'Mike'},
+                    {'WD:Q185836': 15.0,
+                        'WD:Q82799': 'Tom'}
                 ],
-                'https-www-wikidata-org-wiki-q82799': 'Max'
+                'WD:Q82799': 'Max'
             },
             {
-                'https-www-wikidata-org-wiki-q319608': {
-                    'https-www-wikidata-org-wiki-q1413235': 1,
-                    'https-www-wikidata-org-wiki-q24574749': 'Nexus str.'
+                'GH:infamily/_/address': {
+                    'WD:Q1413235': 1,
+                    'WD:Q24574749': 'Nexus str.'
                 },
-                'https-www-wikidata-org-wiki-q7569': [
-                    {'https-www-wikidata-org-wiki-q185836': 1.0,
-                        'https-www-wikidata-org-wiki-q82799': 'Deli'},
-                    {'https-www-wikidata-org-wiki-q185836': 7.0,
-                        'https-www-wikidata-org-wiki-q82799': 'Miki'}
+                'WD:Q7569': [
+                    {'WD:Q185836': 1.0,
+                        'WD:Q82799': 'Deli'},
+                    {'WD:Q185836': 7.0,
+                        'WD:Q82799': 'Miki'}
                 ],
-                'https-www-wikidata-org-wiki-q82799': 'Dim'
+                'WD:Q82799': 'Dim'
             }
         ]
 
-        self.assertEqual(normalize(data, schema, slugify=True), result)
+        self.assertEqual(normalize(data, schema, namespace=True), result)
 
     def test_make_and_apply_template(self):
 
