@@ -41,7 +41,7 @@ def metaplate(data, _format='json', ret=False):
                     tpl).replace("'", '"'))
 
 
-def convert(key, value, schema, slugify=False, storage=None):
+def convert(key, value, schema, slugify=False, namespace=False, storage=None):
     """
     Given a dictionary key, value, and schema specification,
     returns the key with normalize value.
@@ -55,6 +55,8 @@ def convert(key, value, schema, slugify=False, storage=None):
     }
     >>> convert(key='something', value='1,234', schema)
     ('https://www.wikidata.org/wiki/Q82799', '1234')
+    >>> convert(key='something', value='1,234', schema, name=True)
+    ('WD:Q82799', '1234')
     """
 
     if not isinstance(schema, dict):
@@ -75,6 +77,9 @@ def convert(key, value, schema, slugify=False, storage=None):
         term, rules = schema.split('|')
 
         if term:
+            if namespace:
+                term = metawiki.url_to_name(term)
+
             if slugify:
                 record = {'name': slug(term), 'url': term}
 
@@ -102,7 +107,7 @@ def convert(key, value, schema, slugify=False, storage=None):
     return key, value
 
 
-def normalize(data, schema=None, slugify=False, storage=None):
+def normalize(data, schema=None, slugify=False, namespace=False, storage=None):
     '''
     Combine data with schema and types in schema by zipping tree.
 
@@ -139,7 +144,7 @@ def normalize(data, schema=None, slugify=False, storage=None):
             meta = dictget(schema, metapath(path))[key if not isinstance(key, int) else 0]
             if isinstance(meta, list):
                 meta = meta[0]
-            return convert(key, value, meta, slugify=slugify, storage=storage)
+            return convert(key, value, meta, slugify=slugify, namespace=namespace, storage=storage)
         except BaseException:
             return key, value
 
