@@ -56,7 +56,7 @@ class TestMain(unittest.TestCase):
                 'children': [
                     {
                         '*': 'https://www.wikidata.org/wiki/Q7569',
-                        'age': {'*': 'https://www.wikidata.org/wiki/Q185836|lambda _: float(_)'},
+                        'age': {'*': 'https://www.wikidata.org/wiki/Q185836#time-years|lambda _: float(_)'},
                         'name': {'*': 'https://www.wikidata.org/wiki/Q82799'}
                     }
                 ],
@@ -71,9 +71,9 @@ class TestMain(unittest.TestCase):
                     'WD:Q24574749': 'Leonardo str.'
                 },
                 'WD:Q7569': [
-                    {'WD:Q185836': 1.0,
+                    {'WD:Q185836#time-years': 1.0,
                         'WD:Q82799': 'Mike'},
-                    {'WD:Q185836': 15.0,
+                    {'WD:Q185836#time-years': 15.0,
                         'WD:Q82799': 'Tom'}
                 ],
                 'WD:Q82799': 'Max'
@@ -84,9 +84,9 @@ class TestMain(unittest.TestCase):
                     'WD:Q24574749': 'Nexus str.'
                 },
                 'WD:Q7569': [
-                    {'WD:Q185836': 1.0,
+                    {'WD:Q185836#time-years': 1.0,
                         'WD:Q82799': 'Deli'},
-                    {'WD:Q185836': 7.0,
+                    {'WD:Q185836#time-years': 7.0,
                         'WD:Q82799': 'Miki'}
                 ],
                 'WD:Q82799': 'Dim'
