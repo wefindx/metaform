@@ -223,7 +223,7 @@ class Dict(dict):
     def __init__(self, *args, **kwargs):
         self.update(*args, **kwargs)
 
-    def format(self, schema=None, lang=None, refresh=False, anchors=False):
+    def format(self, schema=None, lang=None, refresh=False, anchors=True):
 
         if isinstance(schema, str) and len(schema) <= 3:
             lang = schema
@@ -302,7 +302,7 @@ class Dict(dict):
 
 class List(list):
 
-    def format(self, schema=None, lang=None, refresh=False, anchors=False):
+    def format(self, schema=None, lang=None, refresh=False, anchors=True):
 
         if isinstance(schema, str) and len(schema) <= 3:
             lang = schema
