@@ -1,4 +1,5 @@
 .. image:: https://mindey.com/docs/metaform-logo.png
+
 *One star knowing it all...*
 
 metaform
