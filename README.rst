@@ -1,3 +1,6 @@
+.. image:: https://mindey.com/docs/metaform-logo.png
+*One star knowing it all...*
+
 metaform
 ========
 
@@ -20,6 +23,29 @@ Basic Usage
 .. code:: python
 
    import metaform
+
+If your data had an asterisk~!
+------------------------------
+.. code:: python
+
+   # WITHOUT '*' YOU DON'T KNOW WHAT IT MEANS ;(
+   data = {'a': 1.5, 'b': 1458266965.250572}
+
+   # GIVE IT A STAR!
+   data['*'] = 'https://github.com/wefindx/schema/wiki/Sale#test'
+
+   # LOAD, READY.. GO!
+   mydata = metaform.load(data)
+   mydata.format()
+
+   #>  {'price#value-EUR': Decimal('1.5'),
+   #>  'timestamp#time-UnixSeconds': Decimal('1458266965.2505719661712646484375')}
+
+So, what's happening here?
+--------------------------
+.. code:: python
+
+   metaform.load( DATA ).format( SCHEMA )
 
 Let’s say we have some data:
 
@@ -111,7 +137,7 @@ lambdas:
 
    schema = {
        '*': 'greeting',
-       'hello': {'*': 'length|converters.func'},
+       'hello': {'*': 'length|to.func'},
        'world': {'*': 'atoms|lambda x: str(x)+"ABC"'},
        'how': [
             {'*': 'method',
