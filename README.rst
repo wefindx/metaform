@@ -29,18 +29,17 @@ If your data had an asterisk~!
 ------------------------------
 .. code:: python
 
-   # WITHOUT '*' YOU DON'T KNOW WHAT IT MEANS ;(
    data = {'a': 1.5, 'b': 1458266965.250572}
 
-   # GIVE IT A STAR!
    data['*'] = 'https://github.com/wefindx/schema/wiki/Sale#test'
 
-   # LOAD, READY.. GO!
-   mydata = metaform.load(data)
-   mydata.format()
+   metaform.load(data).format()
 
-   #>  {'price#value-EUR': Decimal('1.5'),
-   #>  'timestamp#time-UnixSeconds': Decimal('1458266965.2505719661712646484375')}
+   # GETTING KNOWLEDGE:
+   {
+       'price#value-EUR': Decimal('1.5'),
+       'timestamp#time-UnixSeconds': Decimal('1458266965.2505719661712646484375')
+   }
 
 So, what's happening here?
 --------------------------
