@@ -9,7 +9,7 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='metaform',
-    version='1.0.1.5',
+    version='1.0.1.6',
     description='A utility for defining metadata for data types and formats.',
     long_description=long_description,
     url='https://gitlab.com/wefindx/metaform',

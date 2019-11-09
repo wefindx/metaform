@@ -223,7 +223,7 @@ class Dict(dict):
     def __init__(self, *args, **kwargs):
         self.update(*args, **kwargs)
 
-    def format(self, schema=None, lang=None, refresh=False):
+    def format(self, schema=None, lang=None, refresh=False, anchors=False):
 
         if isinstance(schema, str) and len(schema) <= 3:
             lang = schema
@@ -232,7 +232,10 @@ class Dict(dict):
         if lang:
             return translate(formatize(normalize(self, schema=schema), no_convert=['url']), lang=lang, refresh=refresh)
 
-        return formatize(normalize(self, schema=schema, refresh=refresh))
+        if anchors:
+            return normalize(self, schema=schema, refresh=refresh)
+        else:
+            return formatize(normalize(self, schema=schema, refresh=refresh))
 
     def render(self, lang, schema=None, refresh=False):
         return translate(normalize(self, schema=schema), lang=lang, refresh=refresh)
@@ -299,7 +302,7 @@ class Dict(dict):
 
 class List(list):
 
-    def format(self, schema=None, lang=None, refresh=False):
+    def format(self, schema=None, lang=None, refresh=False, anchors=False):
 
         if isinstance(schema, str) and len(schema) <= 3:
             lang = schema
@@ -309,7 +312,10 @@ class List(list):
             return translate(formatize([normalize(item, schema=schema)
                                         for item in self], no_convert=['url']), lang=lang, refresh=refresh)
 
-        return formatize([normalize(item, schema=schema, refresh=refresh) for item in self])
+        if anchors:
+            return [normalize(item, schema=schema, refresh=refresh) for item in self]
+        else:
+            return formatize([normalize(item, schema=schema, refresh=refresh) for item in self])
 
     def render(self, lang, schema=None, refresh=False):
         return translate([normalize(item, schema=schema) for item in self], lang=lang, refresh=refresh)
