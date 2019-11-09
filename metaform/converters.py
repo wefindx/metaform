@@ -1,3 +1,4 @@
+import decimal as deci
 from datetime import datetime
 
 from dateutil.parser import parse as dateparse
@@ -30,7 +31,7 @@ def integer(x, silent=True):
 def decimal(x, silent=True):
     # return float(x)
     try:
-        return float(x)
+        return deci.Decimal(x)
     except Exception as e:
         if silent:
             return x
