@@ -2,6 +2,22 @@
 
 *One star knowing it all...*
 
+.. code:: python
+
+   # HAVING DATA:
+   data = {'a': 1.5, 'b': 1458266965.250572, 'c': 'LT121000011101001000'}
+
+   data['*'] = 'https://github.com/wefindx/schema/wiki/Sale#test'
+
+   metaform.load(data).format()
+
+   # GETTING KNOWLEDGE:
+   {
+       'price#EUR': Decimal('1.5'),
+       'timestamp#date': datetime.datetime(2016, 3, 18, 2, 9, 25, 250572),
+       'account#IBAN': 'LT121000011101001000'
+   }
+
 metaform
 ========
 
@@ -29,6 +45,7 @@ If your data had an asterisk~!
 ------------------------------
 .. code:: python
 
+   # HAVING DATA:
    data = {'a': 1.5, 'b': 1458266965.250572, 'c': 'LT121000011101001000'}
 
    data['*'] = 'https://github.com/wefindx/schema/wiki/Sale#test'
