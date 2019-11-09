@@ -37,8 +37,8 @@ If your data had an asterisk~!
 
    # GETTING KNOWLEDGE:
    {
-       'price#value-EUR': Decimal('1.5'),
-       'timestamp#time-UnixSeconds': Decimal('1458266965.2505719661712646484375')
+       'price#EUR': Decimal('1.5'),
+       'timestamp#UnixSeconds': Decimal('1458266965.2505719661712646484375')
    }
 
 So, what's happening here?
