@@ -107,7 +107,7 @@ def convert(key, value, schema, slugify=False, namespace=False, storage=None):
     return key, value
 
 
-def normalize(data, schema=None, slugify=False, namespace=False, storage=None):
+def normalize(data, schema=None, slugify=False, namespace=False, storage=None, refresh=False):
     '''
     Combine data with schema and types in schema by zipping tree.
 
@@ -134,9 +134,9 @@ def normalize(data, schema=None, slugify=False, namespace=False, storage=None):
          {'https-www-wikidata-org-wiki-q185836#median': 12,
           'https-www-wikidata-org-wiki-q185836#average': 15}}]
     '''
-    if not schema:
+    if not schema or refresh:
         if '*' in data.keys():
-            schema = get_schema(data['*'])
+            schema = get_schema(data['*'], refresh=refresh)
 
     def visit(path, key, value):
         try:
@@ -232,7 +232,7 @@ class Dict(dict):
         if lang:
             return translate(formatize(normalize(self, schema=schema), no_convert=['url']), lang=lang, refresh=refresh)
 
-        return formatize(normalize(self, schema=schema))
+        return formatize(normalize(self, schema=schema, refresh=refresh))
 
     def render(self, lang, schema=None, refresh=False):
         return translate(normalize(self, schema=schema), lang=lang, refresh=refresh)
@@ -309,7 +309,7 @@ class List(list):
             return translate(formatize([normalize(item, schema=schema)
                                         for item in self], no_convert=['url']), lang=lang, refresh=refresh)
 
-        return formatize([normalize(item, schema=schema) for item in self])
+        return formatize([normalize(item, schema=schema, refresh=refresh) for item in self])
 
     def render(self, lang, schema=None, refresh=False):
         return translate([normalize(item, schema=schema) for item in self], lang=lang, refresh=refresh)
