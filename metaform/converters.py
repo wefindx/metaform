@@ -1,5 +1,6 @@
 import decimal as deci
 from datetime import datetime
+
 from dateutil.parser import parse as dateparse
 
 # TODO: refactor exceptions
