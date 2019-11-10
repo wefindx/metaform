@@ -6,9 +6,7 @@
 
    # HAVING DATA:
    data = {'a': 1.5, 'b': 1458266965.250572, 'c': 'LT121000011101001000'}
-
    data['*'] = 'https://github.com/wefindx/schema/wiki/Sale#test'
-
    metaform.load(data).format()
 
    # GETTING KNOWLEDGE:
