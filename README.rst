@@ -45,19 +45,21 @@ If your data had an asterisk~!
 ------------------------------
 .. code:: python
 
-   # HAVING DATA:
-   data = {'a': 1.5, 'b': 1458266965.250572, 'c': 'LT121000011101001000'}
+   # INPUT
+   metaform.load({
+   '*': 'https://github.com/mindey/terms/wiki/person#foaf',
+    'url': 'http://dbpedia.org/resource/John_Lennon',
+    'fullname': 'John Lennon',
+    'birthdate': '1940-10-09',
+    'spouse': 'http://dbpedia.org/resource/Cynthia_Lennon'
+   }).format()
 
-   data['*'] = 'https://github.com/wefindx/schema/wiki/Sale#test'
-
-   metaform.load(data).format()
-
-   # GETTING KNOWLEDGE:
-   {
-       'price#EUR': Decimal('1.5'),
-       'timestamp#date': datetime.datetime(2016, 3, 18, 2, 9, 25, 250572),
-       'account#IBAN': 'LT121000011101001000'
-   }
+   # OUTPUT
+   {'*': 'https://github.com/mindey/terms/wiki/person#foaf',
+    'jsonld:id': 'http://dbpedia.org/resource/John_Lennon',
+    'foaf:name': 'John Lennon',
+    'schema:birthDate': datetime.datetime(1940, 10, 9, 0, 0),
+    'schema:spouse': 'http://dbpedia.org/resource/Cynthia_Lennon'}
 
 So, what's happening here?
 --------------------------
