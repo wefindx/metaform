@@ -12,11 +12,12 @@
    # GETTING KNOWLEDGE:
    data['*'] = 'https://github.com/wefindx/schema/wiki/Sale#test'
    metaform.load(data).format()
-   {
-     'price#EUR': Decimal('1.5'),
-     'timestamp#date': datetime.datetime(2016, 3, 18, 2, 9, 25, 250572),
-     'account#IBAN': 'LT121000011101001000'
-   }
+   #
+   # {
+   #   'price#EUR': Decimal('1.5'),
+   #   'timestamp#date': datetime.datetime(2016, 3, 18, 2, 9, 25, 250572),
+   #   'account#IBAN': 'LT121000011101001000'
+   # }
 
 metaform
 ========
@@ -97,8 +98,8 @@ object itself. For example:
 
    schema = {
        '*': 'greeting',
-       'hello': {'*': 'length'},
-       'world': {'*': 'atoms'},
+       'hello': 'length',
+       'world': 'atoms',
        'how': [
             {'*': 'method',
              'are': {
@@ -123,8 +124,8 @@ So, we have access to all keys, and can specify, what to do with them:
 
    schema = {
        '*': 'greeting',
-       'hello': {'*': 'length|lambda x: x+5.'},
-       'world': {'*': 'atoms|lambda x: str(x)+"ABC"'},
+       'hello': 'length|lambda x: x+5.',
+       'world': 'atoms|lambda x: str(x)+"ABC"',
        'how': [
             {'*': 'method',
              'are': {
@@ -157,8 +158,8 @@ lambdas:
 
    schema = {
        '*': 'greeting',
-       'hello': {'*': 'length|to.func'},
-       'world': {'*': 'atoms|lambda x: str(x)+"ABC"'},
+       'hello': 'length|to.func',
+       'world': 'atoms|lambda x: str(x)+"ABC"',
        'how': [
             {'*': 'method',
              'are': {
@@ -195,10 +196,10 @@ Let’s define templates for them, with the key names and types to match:
 .. code:: python
 
    topics_schema = [{
-     'id': {'*': 'topic-id'},
-     'type': {'*': '|lambda x: {0: "NEED", 1: "GOAL", 2: "IDEA", 3: "PLAN", 4: "STEP", 5: "TASK"}.get(x)'},
-     'owner': {'username': {'*': ''}, 'id': {'*': 'user-id'}},
-     'blockchain': {'*': '|lambda x: x and True or False'},
+     'id': 'topic-id',
+     'type': '|lambda x: {0: "NEED", 1: "GOAL", 2: "IDEA", 3: "PLAN", 4: "STEP", 5: "TASK"}.get(x)',
+     'owner': {'id': 'user-id'},
+     'blockchain': '|lambda x: x and True or False',
    }]
 
    normal_topics = metaform.normalize(topics, topics_schema)
@@ -235,11 +236,11 @@ Let’s define templates for them, with the key names and types to match:
 .. code:: python
 
    comments_schema = [{
-     'id': {'*': 'comment-id'},
-     'topic': {'*': 'topic-url'},
-     'text': {'*': 'body'},
-     'owner': {'username': {'*': ''}, 'id': {'*': 'user-id'}},
-     'blockchain': {'*': '|lambda x: x and True or False'},
+     'id': 'comment-id',
+     'topic': 'topic-url',
+     'text': 'body',
+     'owner': {'id': 'user-id'},
+     'blockchain': '|lambda x: x and True or False',
    }]
 
    normal_comments = metaform.normalize(comments, comments_schema)
