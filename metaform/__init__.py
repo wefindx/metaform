@@ -15,32 +15,6 @@ from metaform.utils import slug
 to = converters
 
 
-def metaplate(data, _format='json', ret=False):
-    tpl = None
-    if _format == 'yaml':
-        if ret:
-            tpl = template(data, print_yaml=False)
-            return tpl
-        else:
-            template(data, print_yaml=True)
-
-    if _format == 'dict':
-        tpl = template(data, print_yaml=False)
-        if ret:
-            return tpl
-        else:
-            pprint.pprint(tpl)
-
-    if _format == 'json':
-        tpl = template(data, print_yaml=False)
-        if ret:
-            return tpl
-        else:
-            print(
-                pprint.pformat(
-                    tpl).replace("'", '"'))
-
-
 def convert(key, value, schema, slugify=False, namespace=False, storage=None):
     """
     Given a dictionary key, value, and schema specification,
@@ -343,45 +317,46 @@ def load(data, schema=None):
     '''
 
     if isinstance(data, str):
-        if data.endswith('.csv'):
-            filename = data.rsplit('/', 1)[-1]
-            import csv
-            records = [dict(row) for row in csv.DictReader(open(data))]
-            if 'SCANME.md' in os.listdir('.'):
-                import yaml
-                if not schema:
-                    scanme = yaml.load(open('SCANME.md').read().split('```yaml\n', 1)[-1].split('\n```', 1)[0])
-                    schema = get_schema(scanme.get(filename).get('*'))
 
-                if schema:
-                    return wrap(records, schema)
-                else:
-                    # No schema
-                    print('No schema found. Specify it in SCANME.md or provide schema parameter.')
-                    return records
-            else:
-                if schema:
-                    return wrap(records, schema)
-                else:
-                    # No schema
-                    print('No schema found. Specify it in SCANME.md or provide schema parameter.')
-                    return records
+        # Probing if it is a URL
+        if any(data.startswith(proto) for proto in ['http://', 'https://', 'ftp://']):
+            filename = data.rsplit('/', 1)[-1]
+
+            if schema is None:
+                try:
+                    schema = metawiki.fn2url(filename)
+                except Exception:
+                    schema = None
+
+            records = requests.get(data).json()
+
+        # Probing if it is a local path
+        elif len(data[:4096]) < 4096 and os.path.exists(data):
+            filename = data.rsplit('/', 1)[-1]
+
+            if schema is None:
+                try:
+                    schema = metawiki.fn2url(filename)
+                except Exception:
+                    schema = None
+
+            records = json.load(open(data, 'r'))
+
+        else:
+            raise Exception("Unidentified string format. Pass a string, dict, or list")
+
+        if schema:
+            return wrap(records, schema)
+        else:
+            data = records
 
     if isinstance(data, list):
-        records = data
-    elif isinstance(data, dict):
-        records = data
-    elif data.startswith('http://') or data.startswith('https://'):
-        records = requests.get(data).json()
-    else:
-        records = json.load(open(data))
+        ndata = List([Dict(item) for item in data])
+        return ndata
 
-    if isinstance(records, list):
-        ndata = List([Dict(item) for item in records])
-    elif isinstance(records, dict):
-        ndata = Dict(records)
-
-    return ndata
+    if isinstance(data, dict):
+        ndata = Dict(data)
+        return ndata
 
 
 def dump():

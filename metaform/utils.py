@@ -425,3 +425,11 @@ def _sub(a, b):
     remap(b, visit=visit)
     del a['___previous_was_list___']
     return a
+
+
+# def read_csv():
+#     if filename.endswith('.csv'):
+#         from pandas import read_csv
+#         return read_csv(data, *args, **kwargs)
+#         # import csv
+#         # records = [dict(row) for row in csv.DictReader(open(data, 'r'))]
