@@ -1,7 +1,6 @@
 import importlib
 import json
 import os
-import pprint
 
 import metawiki
 import requests
@@ -13,32 +12,6 @@ from metaform.utils import metaplate as template  # noqa
 from metaform.utils import slug
 
 to = converters
-
-
-def metaplate(data, _format='json', ret=False):
-    tpl = None
-    if _format == 'yaml':
-        if ret:
-            tpl = template(data, print_yaml=False)
-            return tpl
-        else:
-            template(data, print_yaml=True)
-
-    if _format == 'dict':
-        tpl = template(data, print_yaml=False)
-        if ret:
-            return tpl
-        else:
-            pprint.pprint(tpl)
-
-    if _format == 'json':
-        tpl = template(data, print_yaml=False)
-        if ret:
-            return tpl
-        else:
-            print(
-                pprint.pformat(
-                    tpl).replace("'", '"'))
 
 
 def convert(key, value, schema, slugify=False, namespace=False, storage=None):
@@ -343,49 +316,110 @@ def load(data, schema=None):
     '''
 
     if isinstance(data, str):
-        if data.endswith('.csv'):
-            filename = data.rsplit('/', 1)[-1]
-            import csv
-            records = [dict(row) for row in csv.DictReader(open(data))]
-            if 'SCANME.md' in os.listdir('.'):
-                import yaml
-                if not schema:
-                    scanme = yaml.load(open('SCANME.md').read().split('```yaml\n', 1)[-1].split('\n```', 1)[0])
-                    schema = get_schema(scanme.get(filename).get('*'))
 
-                if schema:
-                    return wrap(records, schema)
-                else:
-                    # No schema
-                    print('No schema found. Specify it in SCANME.md or provide schema parameter.')
-                    return records
-            else:
-                if schema:
-                    return wrap(records, schema)
-                else:
-                    # No schema
-                    print('No schema found. Specify it in SCANME.md or provide schema parameter.')
-                    return records
+        # Probing if it is a URL
+        if data.startswith('http://') or data.startswith('https://') or data.startswith('ftp://'):
+            filename = data.rsplit('/', 1)[-1]
+
+            if schema is None:
+                try:
+                    schema = metawiki.fn2url(filename)
+                except Exception:
+                    schema = None
+
+            records = requests.get(data).json()
+
+        # Probing if it is a local path
+        elif len(data[:4096]) < 4096 and os.path.exists(data):
+            filename = data.rsplit('/', 1)[-1]
+
+            if schema is None:
+                try:
+                    schema = metawiki.fn2url(filename)
+                except Exception:
+                    schema = None
+
+            records = json.load(open(data, 'r'))
+
+        else:
+            raise Exception("Unidentified string format. Pass a string, dict, or list")
+
+        if schema:
+            return wrap(records, schema)
+        else:
+            data = records
 
     if isinstance(data, list):
-        records = data
-    elif isinstance(data, dict):
-        records = data
-    elif data.startswith('http://') or data.startswith('https://'):
-        records = requests.get(data).json()
-    else:
-        records = json.load(open(data))
+        ndata = List([Dict(item) for item in data])
+        return ndata
 
-    if isinstance(records, list):
-        ndata = List([Dict(item) for item in records])
-    elif isinstance(records, dict):
-        ndata = Dict(records)
-
-    return ndata
+    if isinstance(data, dict):
+        ndata = Dict(data)
+        return ndata
 
 
 def dump():
     pass
+
+
+def read_csv(path, schema=None, refresh=False, *args, **kwargs):
+
+    try:
+        from pandas import read_csv as p_read_csv
+    except Exception:
+        print("This command uses pandas, pip install pandas to use it.")
+
+    if schema is None:
+
+        try:
+
+            if path.startswith('http://') or path.startswith('https://') or path.startswith('ftp://'):
+                fn = path.rsplit('/', 1)[-1]
+
+            elif len(path[:4096]) < 4096 and os.path.exists(path):
+                if '/' in path:
+                    fn = fn.rsplit('/', 1)[-1]
+                else:
+                    fn = path
+
+            schema_url = metawiki.fn2url(fn)
+            schema = get_schema(schema_url, refresh=refresh)
+
+        except Exception:
+            import pprint
+            print("Schema not found. Specify schema, in filename, or as parameter.")
+            df_head = p_read_csv(path, *args, **kwargs, nrows=2)
+            print("Here is template for convenience.")
+            print("schema = ", end="")
+            pprint.pprint(template(df_head.head(1).to_dict(orient='records')[0]))
+            print("Pass it, like read_csv(path, schema=schema)")
+
+    if schema is not None:
+        df = p_read_csv(path, *args, **kwargs)
+
+        df.rename(columns={
+            key: schema[key].get('*').rsplit('|', 1)[0]
+            for key in df.columns if key in schema and key != '*'
+        }, inplace=True)
+
+        started = False
+        for key in schema:
+            if key == '*':
+                continue
+            spec = schema[key].get('*')
+
+            if '|' in spec:
+                term, rules = spec.rsplit('|')
+
+                if term in df.columns:
+                    if not started:
+                        print("Converting fields ...")
+                        started = True
+
+                    print("%s: %s" % (term, rules))
+                    df.loc[:, term] = df[term].apply(lambda x: eval(rules)(x))
+
+        return df
 
 
 def align(source_list, key_list=None):

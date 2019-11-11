@@ -3,7 +3,7 @@ import json
 import unittest
 from copy import deepcopy
 
-from metaform import Dict, align, convert, converters, formatize, metaplate, normalize, template
+from metaform import Dict, align, convert, converters, formatize, normalize, template
 
 
 class TestMain(unittest.TestCase):
@@ -106,7 +106,7 @@ class TestMain(unittest.TestCase):
             'b': 'something'
         }
 
-        tpl = metaplate(data, ret=True)
+        tpl = template(data)
 
         answer = {
             '*': '',
@@ -158,7 +158,7 @@ class TestMain(unittest.TestCase):
             'pk': 1
         }
 
-        tpl = metaplate(data, ret=True)
+        tpl = template(data)
 
         tpl['fields']['blockchain']['*'] = 'HELLO'
 
