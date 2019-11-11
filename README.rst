@@ -5,19 +5,25 @@
 .. code:: python
 
    # HAVING DATA:
-   data = {
+   DATA = {
      'a': 1.5,
      'b': 1458266965.250572,
      'c': [{'x': {'y': 'LT121000011101001000'}}, {'z': 'Omega'}]}
 
    # GETTING KNOWLEDGE:
-   data['*'] = 'https://github.com/wefindx/schema/wiki/Sale#test'
-   metaform.load(data).format()
+   SCHEMA = {
+     'a': 'price#EUR|to.decimal',
+     'b': 'timestamp#date|to.unixtime',
+     'c': [{'*': 'contributions',
+       'x': {'*': 'origins', 'y': 'account#IBAN|to.string'},
+       'z': 'company#name|to.string'}],
+   }
 
-   # {'price#EUR': Decimal('1.5'),
-   #  'timestamp#date': datetime.datetime(2016, 3, 18, 2, 9, 25, 250572),
-   #  'contributions': [{'origins': {'account#IBAN': 'LT121000011101001000'}},
-   #  {'company#name': 'Omega'}]}
+   # NORMALIZATION
+   metaform.load(DATA).format(SCHEMA)
+
+   # OR USE '*' TO REFERENCE SCHEMA TO PACK SCHEMA WITH DATA PACKETS:
+   metaform.load(dict(DATA, **{'*': 'https://github.com/wefindx/schema/wiki/Sale#test'})).format()
 
 
 metaform
