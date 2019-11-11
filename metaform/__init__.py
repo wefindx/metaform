@@ -407,7 +407,8 @@ def read_csv(path, schema=None, refresh=False, *args, **kwargs):
         df = p_read_csv(path, *args, **kwargs)
 
         df.rename(columns={
-            key: (isinstance(schema[key], dict) and schema[key].get('*').rsplit('|', 1)[0]) or (isinstance(schema[key], str) and schema[key].rsplit('|', 1)[0])
+            key: (isinstance(schema[key], dict) and schema[key].get('*').rsplit('|', 1)[0]) or
+                 (isinstance(schema[key], str) and schema[key].rsplit('|', 1)[0])
             for key in df.columns if key in schema and key != '*'
         }, inplace=True)
 
