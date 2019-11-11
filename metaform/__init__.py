@@ -407,15 +407,21 @@ def read_csv(path, schema=None, refresh=False, *args, **kwargs):
         df = p_read_csv(path, *args, **kwargs)
 
         df.rename(columns={
-            key: schema[key].get('*').rsplit('|', 1)[0]
+            key: (isinstance(schema[key], dict) and schema[key].get('*').rsplit('|', 1)[0]) or
+                 (isinstance(schema[key], str) and schema[key].rsplit('|', 1)[0])
             for key in df.columns if key in schema and key != '*'
         }, inplace=True)
 
         started = False
         for key in schema:
             if key == '*':
-                continue
-            spec = schema[key].get('*')
+                if schema['*'] is not None:
+                    df.index.name = schema['*']
+
+            if isinstance(schema[key], dict):
+                spec = schema[key].get('*')
+            elif isinstance(schema[key], str):
+                spec = schema[key]
 
             if '|' in spec:
                 term, rules = spec.rsplit('|')

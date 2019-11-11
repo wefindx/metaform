@@ -55,19 +55,47 @@ If your data had an asterisk~!
 
    # INPUT
    metaform.load({
-   '*': 'https://github.com/mindey/terms/wiki/person#foaf',
-    'url': 'http://dbpedia.org/resource/John_Lennon',
-    'fullname': 'John Lennon',
-    'birthdate': '1940-10-09',
-    'spouse': 'http://dbpedia.org/resource/Cynthia_Lennon'
-   }).format()
+     '*': 'https://github.com/mindey/terms/wiki/person#foaf',
+     'url': 'http://dbpedia.org/resource/John_Lennon',
+     'fullname': 'John Lennon',
+     'birthdate': '1940-10-09',
+     'spouse': 'http://dbpedia.org/resource/Cynthia_Lennon'
+   }).format(refresh=True)
+   # (schemas are cached locally, pass refresh=True to redownload)
 
    # OUTPUT
-   {'*': 'https://github.com/mindey/terms/wiki/person#foaf',
-    'jsonld:id': 'http://dbpedia.org/resource/John_Lennon',
-    'foaf:name': 'John Lennon',
-    'schema:birthDate': datetime.datetime(1940, 10, 9, 0, 0),
-    'schema:spouse': 'http://dbpedia.org/resource/Cynthia_Lennon'}
+   {
+     '*': 'GH:mindey/terms/person#foaf',
+     'jsonld:id': 'http://dbpedia.org/resource/John_Lennon',
+     'foaf:name': 'John Lennon',
+     'schema:birthDate': datetime.datetime(1940, 10, 9, 0, 0),
+     'schema:spouse': 'http://dbpedia.org/resource/Cynthia_Lennon'
+   }
+
+Or, if your filenames had references to schema~
+-----------------------------------------------
+
+.. code:: python
+
+   df = metaform.read_csv(
+     'https://gist.githubusercontent.com/mindey/3f2596e108a5c151f32e1967275a7689/raw/7c4c963219255008fdb438e8b9777cd658eea02e/hello-world.csv',
+     schema={
+       0: 'Timestamp|to.unixtime',
+       1: 'KeyUpOrDown|lambda x: x=="k↓" and "KeyDown" or (x=="k↑" and "KeyUp")',
+       2: 'KeyName'},
+     header=None
+   )
+
+Alternatively, save schema to wiki like `here <https://github.com/mindey/schema/wiki/KeyEvent#mykeylogger-01>`_, and include the schema token inside filename by encoding it as sub-extension, that is, rename ``hello-world.csv`` to ``hello-world.GH~mindey+schema+KeyEvent@mykeylogger-01.csv``:
+
+.. code:: python
+
+   # To get schema token for filename (GH~mindey+schema+KeyEvent@mykeylogger-01) do:
+   metaform.metawiki.url2ext('https://github.com/mindey/schema/wiki/KeyEvent#mykeylogger-01')
+
+   # Then rename filename in the source, and just read file remotely or locally from disk:
+   df = metaform.read_csv('https://gist.githubusercontent.com/mindey/f33978b31468097b5003f032d5d85eb8/raw/9541191e4d99c052a7668223697ef0ef9ce37977/hello-world.GH~mindey+schema+KeyEvent@mykeylogger-01.csv', header=None)
+
 
 So, what's happening here?
 --------------------------
