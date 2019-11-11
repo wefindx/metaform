@@ -128,6 +128,9 @@ def normalize(data, schema=None, slugify=False, namespace=False, storage=None, r
             return key, value
 
     remapped = remap(data, visit=visit)
+    if isinstance(remapped, dict) and schema.get('*') in remapped:
+        remapped['*'] = remapped.pop(schema.get('*'))
+        remapped['*'] = schema.get('*')
 
     return remapped
 
