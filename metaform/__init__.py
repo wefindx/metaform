@@ -1,7 +1,6 @@
 import importlib
 import json
 import os
-import pprint
 
 import metawiki
 import requests
