@@ -32,15 +32,21 @@ def convert(key, value, schema, slugify=False, namespace=False, storage=None):
     ('WD:Q82799', '1234')
     """
 
-    if not isinstance(schema, dict):
-        # schema can't ba non-dict
+    if not isinstance(schema, dict) and not isinstance(schema, str):
+        # schema must be a dict or str
         return key, value
+    #
+    # if '*' not in schema.keys():
+    #     # bad schema
+    #     return key, value
 
-    if '*' not in schema.keys():
-        # bad schema
-        return key, value
+    if isinstance(schema, dict):
 
-    schema = schema.get('*')
+        if '*' not in schema.keys():
+            # bad schema
+            return key, value
+
+        schema = schema.get('*')
 
     if schema:
 
@@ -122,6 +128,9 @@ def normalize(data, schema=None, slugify=False, namespace=False, storage=None, r
             return key, value
 
     remapped = remap(data, visit=visit)
+    if isinstance(remapped, dict) and schema.get('*') in remapped:
+        remapped['*'] = remapped.pop(schema.get('*'))
+        remapped['*'] = schema.get('*')
 
     return remapped
 
