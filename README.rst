@@ -17,6 +17,7 @@
    #   'price#EUR': Decimal('1.5'),
    #   'timestamp#date': datetime.datetime(2016, 3, 18, 2, 9, 25, 250572),
    #   'account#IBAN': 'LT121000011101001000'
+   #   '*': 'GH:wefindx/schema/Sale#test',
    # }
 
 metaform
