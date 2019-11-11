@@ -318,7 +318,7 @@ def load(data, schema=None):
     if isinstance(data, str):
 
         # Probing if it is a URL
-        if any(data.startswith(proto) for proto in ['http://', 'https://', 'ftp://']):
+        if data.startswith('http://') or data.startswith('https://') or data.startswith('ftp://'):
             filename = data.rsplit('/', 1)[-1]
 
             if schema is None:
@@ -360,6 +360,66 @@ def load(data, schema=None):
 
 def dump():
     pass
+
+
+def read_csv(path, schema=None, refresh=False, *args, **kwargs):
+
+    try:
+        from pandas import read_csv as p_read_csv
+    except Exception:
+        print("This command uses pandas, pip install pandas to use it.")
+
+    if schema is None:
+
+        try:
+
+            if path.startswith('http://') or path.startswith('https://') or path.startswith('ftp://'):
+                fn = path.rsplit('/', 1)[-1]
+
+            elif len(path[:4096]) < 4096 and os.path.exists(path):
+                if '/' in path:
+                    fn = fn.rsplit('/', 1)[-1]
+                else:
+                    fn = path
+
+            schema_url = metawiki.fn2url(fn)
+            schema = get_schema(schema_url, refresh=refresh)
+
+        except Exception:
+            import pprint
+            print("Schema not found. Specify schema, in filename, or as parameter.")
+            df_head = p_read_csv(path, *args, **kwargs, nrows=2)
+            print("Here is template for convenience.")
+            print("schema = ", end="")
+            pprint.pprint(template(df_head.head(1).to_dict(orient='records')[0]))
+            print("Pass it, like read_csv(path, schema=schema)")
+
+    if schema is not None:
+        df = p_read_csv(path, *args, **kwargs)
+
+        df.rename(columns={
+            key: schema[key].get('*').rsplit('|', 1)[0]
+            for key in df.columns if key in schema and key != '*'
+        }, inplace=True)
+
+        started = False
+        for key in schema:
+            if key == '*':
+                continue
+            spec = schema[key].get('*')
+
+            if '|' in spec:
+                term, rules = spec.rsplit('|')
+
+                if term in df.columns:
+                    if not started:
+                        print("Converting fields ...")
+                        started = True
+
+                    print("%s: %s" % (term, rules))
+                    df.loc[:, term] = df[term].apply(lambda x: eval(rules)(x))
+
+        return df
 
 
 def align(source_list, key_list=None):
