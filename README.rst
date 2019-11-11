@@ -72,6 +72,16 @@ If your data had an asterisk~!
      'schema:spouse': 'http://dbpedia.org/resource/Cynthia_Lennon'
    }
 
+For example, if you read an API data source:
+--------------------------------------------
+
+.. code:: python
+
+  data = metaform.load('https://www.metaculus.com/api2/questions/')
+  data['*'] ='https://github.com/wefindx/schema/wiki/Topic#metaculuscom-question'
+  data.format()
+  # Try it!
+
 Or, if your filenames had references to schema~
 -----------------------------------------------
 
@@ -131,17 +141,17 @@ object itself. For example:
 
 .. code:: python
 
-   schema = {                        # A # schema = {
-       '*': 'greeting',              # L #     '*': 'greeting',
-       'hello': {'*': 'length'},     # T #     'hello': 'length',
-       'world': {'*': 'atoms'},      # E #     'world': 'atoms',
-       'how': [                      # R #     'how': [
-            {'*': 'method',          # N #          {'*': 'method',
-             'are': {                # A #           'are': {
-                 '*': 'yup',         # T #               '*': 'yup',
-                 'you': {'*': 'me'}} # I #               'you': {'*': 'me'}}
-            }                        # V #          }
-       ]}                            # E #     ]}
+   schema = {                        # A #    schema = {
+       '*': 'greeting',              # L #        '*': 'greeting',
+       'hello': {'*': 'length'},     # T #        'hello': 'length',
+       'world': {'*': 'atoms'},      # E #        'world': 'atoms',
+       'how': [                      # R #        'how': [
+            {'*': 'method',          # N #             {'*': 'method',
+             'are': {                # A #              'are': {
+                 '*': 'yup',         # T #                  '*': 'yup',
+                 'you': {'*': 'me'}} # I #                  'you': {'*': 'me'}}
+            }                        # V #             }
+       ]}                            # E #        ]}
 
    metaform.normalize(data, schema)
 
