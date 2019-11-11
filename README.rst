@@ -6,19 +6,19 @@
 
    # HAVING DATA:
    data = {
-     'a': 1.5, 'b': 1458266965.250572, 'c': 'LT121000011101001000'
-   }
+     'a': 1.5,
+     'b': 1458266965.250572,
+     'c': [{'x': {'y': 'LT121000011101001000'}}, {'z': 'Omega'}]}
 
    # GETTING KNOWLEDGE:
    data['*'] = 'https://github.com/wefindx/schema/wiki/Sale#test'
    metaform.load(data).format()
-   #
-   # {
-   #   'price#EUR': Decimal('1.5'),
-   #   'timestamp#date': datetime.datetime(2016, 3, 18, 2, 9, 25, 250572),
-   #   'account#IBAN': 'LT121000011101001000'
-   #   '*': 'GH:wefindx/schema/Sale#test',
-   # }
+
+   # {'price#EUR': Decimal('1.5'),
+   #  'timestamp#date': datetime.datetime(2016, 3, 18, 2, 9, 25, 250572),
+   #  'contributions': [{'origins': {'account#IBAN': 'LT121000011101001000'}},
+   #  {'company#name': 'Omega'}]}
+
 
 metaform
 ========
