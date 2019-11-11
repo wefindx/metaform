@@ -131,17 +131,17 @@ object itself. For example:
 
 .. code:: python
 
-   schema = {
-       '*': 'greeting',
-       'hello': 'length',
-       'world': 'atoms',
-       'how': [
-            {'*': 'method',
-             'are': {
-                 '*': 'yup',
-                 'you': {'*': 'me'}}
-            }
-       ]}
+   schema = {                        # A # schema = {
+       '*': 'greeting',              # L #     '*': 'greeting',
+       'hello': {'*': 'length'},     # T #     'hello': 'length',
+       'world': {'*': 'atoms'},      # E #     'world': 'atoms',
+       'how': [                      # R #     'how': [
+            {'*': 'method',          # N #          {'*': 'method',
+             'are': {                # A #           'are': {
+                 '*': 'yup',         # T #               '*': 'yup',
+                 'you': {'*': 'me'}} # I #               'you': {'*': 'me'}}
+            }                        # V #          }
+       ]}                            # E #     ]}
 
    metaform.normalize(data, schema)
 
