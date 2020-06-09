@@ -1,5 +1,5 @@
 import importlib
-import json
+import json, yaml
 import os
 
 import metawiki
@@ -348,7 +348,13 @@ def load(data, schema=None):
                 except Exception:
                     schema = None
 
-            records = json.load(open(data, 'r'))
+            # records = json.load(open(data, 'r'))
+            fsource = open(data, 'r')
+
+            if filename.endswith('.yaml') or filename.endswith('.yml'):
+                records = yaml.load(fsource)
+            else:
+                records = json.load(fsource)
 
         else:
             raise Exception("Unidentified string format. Pass a string, dict, or list")
