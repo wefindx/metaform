@@ -352,7 +352,17 @@ def load(data, schema=None):
             fsource = open(data, 'r')
 
             if filename.endswith('.yaml') or filename.endswith('.yml'):
-                records = yaml.load(fsource)
+
+                try:
+                    loader = yaml.CLoader
+                except:
+                    loader = yaml.Loader
+                    print('''\
+                Using slower yaml.Dumper/Loader, install CDumper/CLoader to get faster results, by:
+                 apt install libyaml-dev
+                 pip --no-cache-dir install --verbose --force-reinstall -I pyyaml''')
+
+                records = yaml.load(fsource, Loader=loader)
             else:
                 records = json.load(fsource)
 
